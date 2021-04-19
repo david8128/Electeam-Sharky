@@ -1,7 +1,12 @@
-| Supported Targets | ESP32 |
-| ----------------- | ----- |
+# Electeam-Sharky-ESP32
+This is the firmware for the ESP32 WROOM 32 microcontroller where throttle, break, LCD screen, motor and more systems are integrated.
+![Schematic](https://drive.google.com/uc?export=view&id=18NEBAM3f7z6DvfUNkW7gQg9mj4XFdRmA) 
 
-# MCPWM BLDC motor control(hall sensor feedback) Example
+This is a result of a modification of the MCPWM BLDC motor control(hall sensor feedback) Example from ESP-IDF library.
+
+Here you have the documentation of the example:
+
+## MCPWM BLDC motor control(hall sensor feedback) Example
 
 This example will show you how to use MCPWM module to control bldc motor with hall sensor feedback
  
