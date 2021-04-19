@@ -278,15 +278,16 @@ static void mcpwm_example_bldc_control(void *arg)
             pwm_config.frequency = 1000;    //frequency = 1000Hz
             duty_cycle = (adc_reading_MCPWM-950.0)/31.45;
             if( duty_cycle < 0.0 ){
-                duty_cycle = 0.0;    //duty cycle of P WMxA = 50.0%
+                duty_cycle = 0.0;    
             }else{
                 duty_cycle = (adc_reading_MCPWM-950)/31.45;
             }
             printf("duty_cycle: %f\n", duty_cycle);
             pwm_config.cmpr_a = duty_cycle;
-            pwm_config.cmpr_b = 0;    //duty cycle of PWMxb = 50.0%
+            pwm_config.cmpr_b = 0;    
             pwm_config.counter_mode = MCPWM_UP_COUNTER;
             if (hall_sensor_value == 2) {
+                printf("Condicion: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_B);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A);
@@ -299,6 +300,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
             if (hall_sensor_value == 6) {
+                printf("Condicion: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B);
                 mcpwm_deadtime_disable(MCPWM_UNIT_0, MCPWM_TIMER_0);
@@ -311,6 +313,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
             if (hall_sensor_value == 4) {
+                printf("Condicion: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A);
@@ -322,6 +325,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
             if (hall_sensor_value == 5) {
+                printf("Condicion: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_B);
                 mcpwm_deadtime_disable(MCPWM_UNIT_0, MCPWM_TIMER_2);
@@ -334,6 +338,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10uss
             }
             if (hall_sensor_value == 1) {
+                printf("Condicion: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A);
@@ -345,6 +350,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10uss
             }
             if (hall_sensor_value == 3) {
+                printf("Condicion: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B);
                 mcpwm_deadtime_disable(MCPWM_UNIT_0, MCPWM_TIMER_1);
@@ -369,7 +375,7 @@ static void mcpwm_example_bldc_control(void *arg)
             mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &pwm_config);    //Configure PWM1A & PWM1B with above settings
             mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);    //Configure PWM2A & PWM2B with above settings
         }
-        vTaskDelay(pdMS_TO_TICKS(100));
+        vTaskDelay(pdMS_TO_TICKS(10));
     
     }
 }
