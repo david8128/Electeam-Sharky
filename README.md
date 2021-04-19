@@ -34,7 +34,7 @@ User needs to make changes according to the motor and gate driver ic used
 
 
 
-## Step 3: Initialize MCPWM
+## Step 2: Initialize MCPWM
  * You need to set the frequency and duty cycle of MCPWM timer
  * You need to set the MCPWM channel you want to use, and bind the channel with one of the timers
  * You need to set the capture unit, for POS/NEG edge capture
