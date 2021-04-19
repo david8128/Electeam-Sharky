@@ -1,6 +1,7 @@
 # Electeam-Sharky-ESP32
 This is the firmware for the ESP32 WROOM 32 microcontroller where throttle, break, LCD screen, motor and more systems are integrated.
-![Schematic](https://drive.google.com/file/d/18NEBAM3f7z6DvfUNkW7gQg9mj4XFdRmA/view?usp=sharing) 
+![Schematic](https://drive.google.com/uc?export=view&id=18NEBAM3f7z6DvfUNkW7gQg9mj4XFdRmA) 
+
 This is a result of a modification of the MCPWM BLDC motor control(hall sensor feedback) Example from ESP-IDF library.
 
 Here you have the documentation of the example:
