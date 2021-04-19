@@ -14,7 +14,7 @@ The following examples uses MCPWM module to control bldc motor and vary its spee
 
 The bldc motor used for testing this code had hall sensor capture sequence of 6-->4-->5-->1-->3-->2-->6-->4--> and so on
 
-IR2136 3-ph bridge driver is used for testing this example code
+IR2103 3-ph bridge driver is used for testing this example code
 
 User needs to make changes according to the motor and gate driver ic used
 
