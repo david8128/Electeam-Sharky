@@ -1,5 +1,4 @@
-
-/* MCPWM BLDC control Test code
+/* MCPWM basic config example
 
    This example code is in the Public Domain (or CC0 licensed, at your option.)
 
@@ -9,21 +8,47 @@
 */
 
 /*
- * The following examples uses mcpwm module to control bldc motor vary its speed continiously
- * The BLDC motor used for testing this code had sequence of 6-->4-->5-->1-->3-->2-->6-->4--> and so on
- * IR2136 3-ph bridge driver is used for testing this example code
- * User needs to make changes according to the motor and gate driver ic used
+ * This example will show you how to use each submodule of MCPWM unit.
+ * The example can't be used without modifying the code first.
+ * Edit the macros at the top of mcpwm_example_basic_config.c to enable/disable the submodules which are used in the example.
  */
 
-#include <stdio.h>
-
+// Include FreeRTOS for both MCPWM and ADC
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+
+// Include for MCPWM
+#include <stdio.h>
+#include "string.h"
 #include "freertos/queue.h"
 #include "esp_attr.h"
 #include "soc/rtc.h"
 #include "driver/mcpwm.h"
 #include "soc/mcpwm_periph.h"
+
+// Include for ADC
+#include <stdlib.h>
+#include "driver/gpio.h"
+#include "driver/adc.h"
+#include "esp_adc_cal.h"
+
+// Define for ADC
+#define DEFAULT_VREF    1100        //Use adc2_vref_to_gpio() to obtain a better estimate
+#define NO_OF_SAMPLES   64          //Multisampling
+
+
+static esp_adc_cal_characteristics_t *adc_chars;
+#if CONFIG_IDF_TARGET_ESP32
+static const adc_channel_t channel = ADC_CHANNEL_6;     //GPIO34 if ADC1, GPIO14 if ADC2
+static const adc_bits_width_t width = ADC_WIDTH_BIT_12;
+#elif CONFIG_IDF_TARGET_ESP32S2
+static const adc_channel_t channel = ADC_CHANNEL_6;     // GPIO7 if ADC1, GPIO17 if ADC2
+static const adc_bits_width_t width = ADC_WIDTH_BIT_13;
+#endif
+static const adc_atten_t atten = ADC_ATTEN_DB_11;
+static const adc_unit_t unit = ADC_UNIT_1;
+
+//Define for MCPWM
 
 #define INITIAL_DUTY 10.0   //initial duty cycle is 10.0%
 #define MCPWM_GPIO_INIT 0   //select which function to use to initialize gpio signals
@@ -36,15 +61,18 @@
 #define CAP1_INT_EN BIT(28)  //Capture 1 interrupt bit
 #define CAP2_INT_EN BIT(29)  //Capture 2 interrupt bit
 
-#define GPIO_PWM0A_OUT 15   //Set GPIO 15 as PWM0A
-#define GPIO_PWM0B_OUT 02   //Set GPIO 02 as PWM0B
-#define GPIO_PWM1A_OUT 00   //Set GPIO 00 as PWM1A
-#define GPIO_PWM1B_OUT 04   //Set GPIO 04 as PWM1B
-#define GPIO_PWM2A_OUT 16   //Set GPIO 16 as PWM2A
-#define GPIO_PWM2B_OUT 17   //Set GPIO 17 as PWM2B
-#define GPIO_CAP0_IN   25   //Set GPIO 25 as  CAP0
-#define GPIO_CAP1_IN   26   //Set GPIO 26 as  CAP1
-#define GPIO_CAP2_IN   27   //Set GPIO 27 as  CAP2
+#define GPIO_PWM0A_OUT 19   //Set GPIO 19 as PWM0A
+#define GPIO_PWM0B_OUT 18   //Set GPIO 18 as PWM0B
+#define GPIO_PWM1A_OUT 17   //Set GPIO 17 as PWM1A
+#define GPIO_PWM1B_OUT 16   //Set GPIO 16 as PWM1B
+#define GPIO_PWM2A_OUT 15   //Set GPIO 15 as PWM2A
+#define GPIO_PWM2B_OUT 14   //Set GPIO 14 as PWM2B
+#define GPIO_CAP0_IN   23   //Set GPIO 23 as  CAP0
+#define GPIO_CAP1_IN   25   //Set GPIO 25 as  CAP1
+#define GPIO_CAP2_IN   26   //Set GPIO 26 as  CAP2
+
+#define GPIO_BREAK  05   //Set GPIO 26 as  CAP2
+
 
 typedef struct {
     uint32_t capture_signal;
@@ -55,9 +83,12 @@ static uint32_t hall_sensor_value = 0;
 static uint32_t hall_sensor_previous = 0;
 
 xQueueHandle cap_queue;
+xQueueHandle cap_queue2;
 
 static mcpwm_dev_t *MCPWM[2] = {&MCPWM0, &MCPWM1};
 
+
+// Functions MCPWM
 static void mcpwm_example_gpio_initialize(void)
 {
     printf("initializing mcpwm bldc control gpio...\n");
@@ -217,13 +248,12 @@ static void mcpwm_example_bldc_control(void *arg)
     mcpwm_config_t pwm_config;
     pwm_config.frequency = 1000;    //frequency = 1000Hz
     pwm_config.cmpr_a = 50.0;    //duty cycle of PWMxA = 50.0%
-    pwm_config.cmpr_b = 50.0;    //duty cycle of PWMxb = 50.0%
+    pwm_config.cmpr_b = 0;    //duty cycle of PWMxb = 50.0%
     pwm_config.counter_mode = MCPWM_UP_COUNTER;
     pwm_config.duty_mode = MCPWM_DUTY_MODE_1;
     mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);    //Configure PWM0A & PWM0B with above settings
     mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &pwm_config);    //Configure PWM1A & PWM1B with above settings
     mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);    //Configure PWM2A & PWM2B with above settings
-
     //3. Capture configuration
     //configure CAP0, CAP1 and CAP2 signal to start capture counter on rising edge
     //we generate a gpio_test_signal of 20ms on GPIO 12 and connect it to one of the capture signal, the disp_captured_function displays the time between rising edge
@@ -235,17 +265,34 @@ static void mcpwm_example_bldc_control(void *arg)
     MCPWM[MCPWM_UNIT_0]->int_ena.val = (CAP0_INT_EN | CAP1_INT_EN | CAP2_INT_EN);  //Enable interrupt on  CAP0, CAP1 and CAP2 signal
     mcpwm_isr_register(MCPWM_UNIT_0, isr_handler, NULL, ESP_INTR_FLAG_IRAM, NULL);  //Set ISR Handler
     //According to the hall sensor input value take action on PWM0A/0B/1A/1B/2A/2B
+    uint32_t adc_reading_MCPWM = 0;
+    float duty_cycle = 0.0;
     while (1) {
-        hall_sensor_value = (gpio_get_level(GPIO_NUM_27) * 1) + (gpio_get_level(GPIO_NUM_26) * 2) + (gpio_get_level(GPIO_NUM_25) * 4);
-        if (hall_sensor_value != hall_sensor_previous) {
-            //printf("hall_sen val: %d\n", hall_sensor_value);
+        xQueueReceive(cap_queue2, &adc_reading_MCPWM, portMAX_DELAY);
+        hall_sensor_value = (gpio_get_level(GPIO_CAP2_IN) * 1) + (gpio_get_level(GPIO_CAP1_IN) * 2) + (gpio_get_level(GPIO_CAP0_IN) * 4);
+        if(gpio_get_level(GPIO_BREAK) == 1){
+            printf("hall_sen val: %d\n", hall_sensor_value);
+            mcpwm_config_t pwm_config;
+            pwm_config.frequency = 1000;    //frequency = 1000Hz
+            duty_cycle = (adc_reading_MCPWM-950.0)/31.45;
+            if( duty_cycle < 0.0 ){
+                duty_cycle = 0.0;    //duty cycle of P WMxA = 50.0%
+            }else{
+                duty_cycle = (adc_reading_MCPWM-950)/31.45;
+            }
+            printf("duty_cycle: %f\n", duty_cycle);
+            pwm_config.cmpr_a = duty_cycle;
+            pwm_config.cmpr_b = 0;    //duty cycle of PWMxb = 50.0%
+            pwm_config.counter_mode = MCPWM_UP_COUNTER;
             if (hall_sensor_value == 2) {
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_B);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A);
                 mcpwm_set_signal_high(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B);
                 //MCPWMXA to duty mode 1 and MCPWMXB to duty mode 0 or vice versa will generate MCPWM compliment signal of each other, there are also other ways to do it
-                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_1); //Set PWM0A to duty mode one
+                
+                mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);    //Configure PWM0A & PWM0B with above settings
+                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0); //Set PWM0A to duty mode one
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, MCPWM_DUTY_MODE_0); //Set PWM0B back to duty mode zero
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
@@ -256,7 +303,8 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A);
                 mcpwm_set_signal_high(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B);
                 //MCPWMXA to duty mode 1 and MCPWMXB to duty mode 0 or vice versa will generate MCPWM compliment signal of each other, there are also other ways to do it
-                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A, MCPWM_DUTY_MODE_1); //Set PWM2A to duty mode one
+                mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);    //Configure PWM0A & PWM0B with above settings
+                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A, MCPWM_DUTY_MODE_0); //Set PWM2A to duty mode one
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_B, MCPWM_DUTY_MODE_0); //Set PWM2B back to duty mode zero
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
@@ -266,7 +314,8 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A);
                 mcpwm_set_signal_high(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B);
                 //MCPWMXA to duty mode 1 and MCPWMXB to duty mode 0 or vice versa will generate MCPWM compliment signal of each other, there are also other ways to do it
-                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A, MCPWM_DUTY_MODE_1); //Set PWM2A to duty mode one
+                mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);    //Configure PWM0A & PWM0B with above settings
+                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A, MCPWM_DUTY_MODE_0); //Set PWM2A to duty mode one
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_B, MCPWM_DUTY_MODE_0); //Set PWM2B back to duty mode zero
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
@@ -277,7 +326,8 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A);
                 mcpwm_set_signal_high(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B);
                 //MCPWMXA to duty mode 1 and MCPWMXB to duty mode 0 or vice versa will generate MCPWM compliment signal of each other, there are also other ways to do it
-                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, MCPWM_DUTY_MODE_1); //Set PWM1A to duty mode one
+                mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &pwm_config);    //Configure PWM0A & PWM0B with above settings
+                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, MCPWM_DUTY_MODE_0); //Set PWM1A to duty mode one
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, MCPWM_DUTY_MODE_0); //Set PWM1B back to duty mode zero
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10uss
             }
@@ -287,7 +337,8 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A);
                 mcpwm_set_signal_high(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_B);
                 //MCPWMXA to duty mode 1 and MCPWMXB to duty mode 0 or vice versa will generate MCPWM compliment signal of each other, there are also other ways to do it
-                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, MCPWM_DUTY_MODE_1); //Set PWM1A to duty mode one
+                mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &pwm_config);    //Configure PWM0A & PWM0B with above settings
+                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, MCPWM_DUTY_MODE_0); //Set PWM1A to duty mode one
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, MCPWM_DUTY_MODE_0); //Set PWM1B back to duty mode zero
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10uss
             }
@@ -298,26 +349,128 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A);
                 mcpwm_set_signal_high(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_B);
                 //MCPWMXA to duty mode 1 and MCPWMXB to duty mode 0 or vice versa will generate MCPWM compliment signal of each other, there are also other ways to do it
-                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_1); //Set PWM0A to duty mode one
+                mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);    //Configure PWM0A & PWM0B with above settings
+                mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0); //Set PWM0A to duty mode one
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, MCPWM_DUTY_MODE_0); //Set PWM0B back to duty mode zero
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
             hall_sensor_previous = hall_sensor_value;
+        }else{
+            printf("FRENADO!\n");
+            mcpwm_config_t pwm_config;
+            pwm_config.frequency = 1000;    //frequency = 1000Hz
+            pwm_config.cmpr_a = 0.0;    //duty cycle of PWMxA = 50.0%
+            pwm_config.cmpr_b = 0.0;    //duty cycle of PWMxb = 50.0%
+            pwm_config.counter_mode = MCPWM_UP_COUNTER;
+            pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
+            mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);    //Configure PWM0A & PWM0B with above settings
+            mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &pwm_config);    //Configure PWM1A & PWM1B with above settings
+            mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);    //Configure PWM2A & PWM2B with above settings
         }
+        vTaskDelay(pdMS_TO_TICKS(10));
+    
+    }
+}
+// Functions for ADC
+static void check_efuse(void)
+{
+#if CONFIG_IDF_TARGET_ESP32
+    //Check if TP is burned into eFuse
+    if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP) == ESP_OK) {
+        printf("eFuse Two Point: Supported\n");
+    } else {
+        printf("eFuse Two Point: NOT supported\n");
+    }
+    //Check Vref is burned into eFuse
+    if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_VREF) == ESP_OK) {
+        printf("eFuse Vref: Supported\n");
+    } else {
+        printf("eFuse Vref: NOT supported\n");
+    }
+#elif CONFIG_IDF_TARGET_ESP32S2
+    if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP) == ESP_OK) {
+        printf("eFuse Two Point: Supported\n");
+    } else {
+        printf("Cannot retrieve eFuse Two Point calibration values. Default calibration values will be used.\n");
+    }
+#else
+#error "This example is configured for ESP32/ESP32S2."
+#endif
+}
+
+static void print_char_val_type(esp_adc_cal_value_t val_type)
+{
+    if (val_type == ESP_ADC_CAL_VAL_EFUSE_TP) {
+        printf("Characterized using Two Point Value\n");
+    } else if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
+        printf("Characterized using eFuse Vref\n");
+    } else {
+        printf("Characterized using Default Vref\n");
     }
 }
 
+/**
+ * @brief Configure whole ADC module and print data
+ */
+static void setup_print_ADC(void *parameter)
+{
+    //Check if Two Point or Vref are burned into eFuse
+    check_efuse();
+
+    //Configure ADC
+    if (unit == ADC_UNIT_1) {
+        adc1_config_width(width);
+        adc1_config_channel_atten(channel, atten);
+    } else {
+        adc2_config_channel_atten((adc2_channel_t)channel, atten);
+    }
+
+    //Characterize ADC
+    adc_chars = calloc(1, sizeof(esp_adc_cal_characteristics_t));
+    esp_adc_cal_value_t val_type = esp_adc_cal_characterize(unit, atten, width, DEFAULT_VREF, adc_chars);
+    print_char_val_type(val_type);
+
+    //Continuously sample ADC1
+    while (1) {
+        uint32_t adc_reading = 0;
+        //Multisampling
+        for (int i = 0; i < NO_OF_SAMPLES; i++) {
+            if (unit == ADC_UNIT_1) {
+                adc_reading += adc1_get_raw((adc1_channel_t)channel);
+            } else {
+                int raw;
+                adc2_get_raw((adc2_channel_t)channel, width, &raw);
+                adc_reading += raw;
+            }
+        }
+        adc_reading /= NO_OF_SAMPLES;
+        //Convert adc_reading to voltage in mV
+        // uint32_t voltage = esp_adc_cal_raw_to_voltage(adc_reading, adc_chars);
+        // printf("Raw: %d\tVoltage: %dmV\n", adc_reading, voltage);
+        xQueueSend(cap_queue2, &adc_reading, portMAX_DELAY);
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+
+
 void app_main(void)
 {
-    printf("Testing MCPWM BLDC Control...\n");
+    //SETUP MCPWM
+    printf("Testing MCPWM...\n");
 #if CHANGE_DUTY_CONTINUOUSLY
     xTaskCreate(change_duty, "change_duty", 2048, NULL, 2, NULL);
 #endif
     cap_queue = xQueueCreate(1, sizeof(capture)); //comment if you don't want to use capture module
+    cap_queue2 = xQueueCreate(1, sizeof(uint32_t)); //comment if you don't want to use capture module
 #if GPIO_HALL_TEST_SIGNAL
     xTaskCreate(gpio_test_signal, "gpio_test_signal", 2048, NULL, 2, NULL);
 #endif
-    xTaskCreate(disp_captured_signal, "mcpwm_config", 4096, NULL, 2, NULL);  //comment if you don't want to use capture module
-    xTaskCreate(mcpwm_example_bldc_control, "mcpwm_example_bldc_control", 4096, NULL, 2, NULL);
+    if(cap_queue == NULL || cap_queue2 == NULL){
+        printf("Error creating the cap_queue or cap_queue2");
+    }
+    xTaskCreate(disp_captured_signal, "mcpwm_config", 4096, NULL, 5, NULL);  //comment if you don't want to use capture module
+    xTaskCreate(setup_print_ADC, "setup_print_ADC", 4096, NULL, 5, NULL);  //comment if you don't want to use capture module 
+    // @TODO fix with que
+    xTaskCreate(mcpwm_example_bldc_control, "mcpwm_example_bldc_control", 4096, NULL, 5, NULL);
 }
 
