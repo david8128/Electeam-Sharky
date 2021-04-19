@@ -240,6 +240,7 @@ static void change_duty(void *arg)
  */
 static void mcpwm_example_bldc_control(void *arg)
 {
+    
     //1. mcpwm gpio initialization
     mcpwm_example_gpio_initialize();
 
@@ -264,6 +265,7 @@ static void mcpwm_example_bldc_control(void *arg)
     //enable interrupt, so each this a rising edge occurs interrupt is triggered
     MCPWM[MCPWM_UNIT_0]->int_ena.val = (CAP0_INT_EN | CAP1_INT_EN | CAP2_INT_EN);  //Enable interrupt on  CAP0, CAP1 and CAP2 signal
     mcpwm_isr_register(MCPWM_UNIT_0, isr_handler, NULL, ESP_INTR_FLAG_IRAM, NULL);  //Set ISR Handler
+    
     //According to the hall sensor input value take action on PWM0A/0B/1A/1B/2A/2B
     uint32_t adc_reading_MCPWM = 0;
     float duty_cycle = 0.0;
@@ -367,7 +369,7 @@ static void mcpwm_example_bldc_control(void *arg)
             mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &pwm_config);    //Configure PWM1A & PWM1B with above settings
             mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);    //Configure PWM2A & PWM2B with above settings
         }
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(100));
     
     }
 }
