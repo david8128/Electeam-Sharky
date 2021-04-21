@@ -159,23 +159,23 @@ $EndComp
 $Comp
 L power:GND #PWR08
 U 1 1 6069EAE5
-P 2500 900
-F 0 "#PWR08" H 2500 650 50  0001 C CNN
-F 1 "GND" H 2505 727 50  0000 C CNN
-F 2 "" H 2500 900 50  0001 C CNN
-F 3 "" H 2500 900 50  0001 C CNN
-	1    2500 900 
+P 1800 650
+F 0 "#PWR08" H 1800 400 50  0001 C CNN
+F 1 "GND" H 1805 477 50  0000 C CNN
+F 2 "" H 1800 650 50  0001 C CNN
+F 3 "" H 1800 650 50  0001 C CNN
+	1    1800 650 
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:+36V #PWR07
 U 1 1 6069FCB5
-P 2500 250
-F 0 "#PWR07" H 2500 100 50  0001 C CNN
-F 1 "+36V" H 2515 423 50  0000 C CNN
-F 2 "" H 2500 250 50  0001 C CNN
-F 3 "" H 2500 250 50  0001 C CNN
-	1    2500 250 
+P 1800 450
+F 0 "#PWR07" H 1800 300 50  0001 C CNN
+F 1 "+36V" H 1815 623 50  0000 C CNN
+F 2 "" H 1800 450 50  0001 C CNN
+F 3 "" H 1800 450 50  0001 C CNN
+	1    1800 450 
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -760,25 +760,25 @@ Text GLabel 6100 3700 2    50   Input ~ 0
 RX-LCD
 Text GLabel 6100 3800 2    50   Input ~ 0
 TX-LCD
-Text GLabel 4150 4100 0    50   Input ~ 0
-HALL-A
 Text GLabel 4150 4200 0    50   Input ~ 0
-HALL-B
+HALL-A
 Text GLabel 4150 4300 0    50   Input ~ 0
-HALL-C
-Text GLabel 6100 4600 2    50   Input ~ 0
-LIN1
-Text GLabel 6100 4400 2    50   Input ~ 0
-LIN2
+HALL-B
 Text GLabel 4150 4400 0    50   Input ~ 0
-Throttle
+HALL-C
+Text GLabel 6100 4500 2    50   Input ~ 0
+LIN1
+Text GLabel 6100 4300 2    50   Input ~ 0
+LIN2
 Text GLabel 4150 4500 0    50   Input ~ 0
-Current_Sensor_IN
+Throttle
 Text GLabel 4150 4600 0    50   Input ~ 0
+Current_Sensor_IN
+Text GLabel 4150 4700 0    50   Input ~ 0
 Voltage_Sensor
-Text GLabel 6100 4100 2    50   Input ~ 0
-LM35
 Text GLabel 6100 4000 2    50   Input ~ 0
+LM35
+Text GLabel 6100 3900 2    50   Input ~ 0
 Brake
 Text GLabel 8250 2700 2    50   Input ~ 0
 PH1
@@ -874,7 +874,7 @@ Connection ~ 1700 3250
 Wire Wire Line
 	1700 3250 1800 3250
 Wire Wire Line
-	5900 4600 6100 4600
+	5900 4500 6100 4500
 Wire Wire Line
 	5900 3800 6100 3800
 Wire Wire Line
@@ -1146,10 +1146,6 @@ $EndComp
 Wire Wire Line
 	1100 500  1050 500 
 Wire Wire Line
-	1500 500  1700 500 
-Wire Wire Line
-	550  600  1700 600 
-Wire Wire Line
 	1700 1650 2850 1650
 $Comp
 L Switch:SW_Push SW2
@@ -1371,107 +1367,71 @@ $EndComp
 $Comp
 L Device:CP C10
 U 1 1 60B587DD
-P 2000 550
-F 0 "C10" H 2118 596 50  0000 L CNN
-F 1 "220uF" H 2118 505 50  0000 L CNN
-F 2 "Capacitor_SMD:CP_Elec_10x14.3" H 2118 459 50  0001 L CNN
-F 3 "~" H 2000 550 50  0001 C CNN
-	1    2000 550 
+P 2300 600
+F 0 "C10" H 2418 646 50  0000 L CNN
+F 1 "220uF" H 2418 555 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_10x14.3" H 2418 509 50  0001 L CNN
+F 3 "~" H 2300 600 50  0001 C CNN
+	1    2300 600 
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2000 700  2000 750 
-Wire Wire Line
-	2000 750  1700 750 
-Wire Wire Line
-	1700 750  1700 600 
-Connection ~ 2000 750 
-Wire Wire Line
-	2000 400  2000 350 
-Wire Wire Line
-	2000 350  1700 350 
-Wire Wire Line
-	1700 350  1700 500 
-Connection ~ 2000 350 
-Wire Wire Line
-	5900 4200 6100 4200
-Text GLabel 6100 4200 2    50   Input ~ 0
+	5900 4100 6100 4100
+Text GLabel 6100 4100 2    50   Input ~ 0
 LIN3
-Text GLabel 6100 4500 2    50   Input ~ 0
+Text GLabel 6100 4400 2    50   Input ~ 0
 HIN2
 Wire Wire Line
-	5900 4500 6100 4500
+	5900 4400 6100 4400
 Text GLabel 6100 4700 2    50   Input ~ 0
 HIN1
 Wire Wire Line
 	6100 4700 5900 4700
 Wire Wire Line
-	6100 4400 5900 4400
-Text GLabel 6100 4300 2    50   Input ~ 0
+	6100 4300 5900 4300
+Text GLabel 6100 4200 2    50   Input ~ 0
 HIN3
 Wire Wire Line
-	6100 4300 5900 4300
-Wire Wire Line
-	6100 4100 5900 4100
+	6100 4200 5900 4200
 Wire Wire Line
 	6100 4000 5900 4000
+Wire Wire Line
+	6100 3900 5900 3900
 Wire Wire Line
 	6150 4800 5900 4800
 $Comp
 L power:+5V #PWR0102
 U 1 1 60D5293D
-P 3750 4900
-F 0 "#PWR0102" H 3750 4750 50  0001 C CNN
-F 1 "+5V" H 3765 5073 50  0000 C CNN
-F 2 "" H 3750 4900 50  0001 C CNN
-F 3 "" H 3750 4900 50  0001 C CNN
-	1    3750 4900
+P 3750 5000
+F 0 "#PWR0102" H 3750 4850 50  0001 C CNN
+F 1 "+5V" H 3765 5173 50  0000 C CNN
+F 2 "" H 3750 5000 50  0001 C CNN
+F 3 "" H 3750 5000 50  0001 C CNN
+	1    3750 5000
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:CP C11
 U 1 1 60DBB821
-P 2500 550
-F 0 "C11" H 2618 596 50  0000 L CNN
-F 1 "220uF" H 2618 505 50  0000 L CNN
-F 2 "Capacitor_SMD:CP_Elec_10x14.3" H 2538 400 50  0001 C CNN
-F 3 "~" H 2500 550 50  0001 C CNN
-	1    2500 550 
+P 2800 600
+F 0 "C11" H 2918 646 50  0000 L CNN
+F 1 "220uF" H 2918 555 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_10x14.3" H 2838 450 50  0001 C CNN
+F 3 "~" H 2800 600 50  0001 C CNN
+	1    2800 600 
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:CP C12
 U 1 1 60DBBBDB
-P 2950 550
-F 0 "C12" H 3068 596 50  0000 L CNN
-F 1 "220uF" H 3068 505 50  0000 L CNN
-F 2 "Capacitor_SMD:CP_Elec_10x14.3" H 2988 400 50  0001 C CNN
-F 3 "~" H 2950 550 50  0001 C CNN
-	1    2950 550 
+P 3250 600
+F 0 "C12" H 3368 646 50  0000 L CNN
+F 1 "220uF" H 3368 555 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_10x14.3" H 3288 450 50  0001 C CNN
+F 3 "~" H 3250 600 50  0001 C CNN
+	1    3250 600 
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	2000 350  2500 350 
-Wire Wire Line
-	2500 350  2500 400 
-Wire Wire Line
-	2500 350  2950 350 
-Wire Wire Line
-	2950 350  2950 400 
-Connection ~ 2500 350 
-Wire Wire Line
-	2500 700  2500 750 
-Wire Wire Line
-	2500 750  2000 750 
-Wire Wire Line
-	2950 700  2950 750 
-Wire Wire Line
-	2950 750  2500 750 
-Connection ~ 2500 750 
-Wire Wire Line
-	2500 250  2500 350 
-Wire Wire Line
-	2500 900  2500 750 
 $Comp
 L power:+12V #PWR0110
 U 1 1 60E85274
@@ -1520,21 +1480,19 @@ Wire Wire Line
 	7850 1800 7850 1650
 Connection ~ 7850 1800
 Wire Wire Line
+	4150 4400 4350 4400
+Wire Wire Line
 	4150 4300 4350 4300
 Wire Wire Line
 	4150 4200 4350 4200
 Wire Wire Line
-	4150 4100 4350 4100
-Wire Wire Line
 	4350 4800 4100 4800
 Wire Wire Line
-	3750 4900 4350 4900
+	4150 4700 4350 4700
 Wire Wire Line
-	4150 4600 4350 4600
+	4350 4600 4150 4600
 Wire Wire Line
-	4350 4500 4150 4500
-Wire Wire Line
-	4150 4400 4350 4400
+	4150 4500 4350 4500
 $Comp
 L ESP32-DEVKITC-32D:ESP32-DEVKITC-32D U1
 U 1 1 6081E288
@@ -1618,4 +1576,60 @@ F 3 "" H 7700 6100 50  0001 C CNN
 	1    7700 6100
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	3750 5050 4300 5050
+Wire Wire Line
+	4300 5050 4300 4900
+Wire Wire Line
+	4300 4900 4350 4900
+Wire Wire Line
+	3750 5000 3750 5050
+NoConn ~ 5900 4600
+Wire Wire Line
+	1500 500  1800 500 
+Wire Wire Line
+	1800 500  1800 450 
+Wire Wire Line
+	1800 650  1800 600 
+Wire Wire Line
+	1800 600  550  600 
+Wire Wire Line
+	2300 450  2300 300 
+Wire Wire Line
+	2300 300  2800 300 
+Wire Wire Line
+	2800 300  2800 450 
+Wire Wire Line
+	3250 450  3250 300 
+Wire Wire Line
+	3250 300  2800 300 
+Connection ~ 2800 300 
+Wire Wire Line
+	2300 750  2300 900 
+Wire Wire Line
+	2300 900  2800 900 
+Wire Wire Line
+	2800 900  2800 750 
+Wire Wire Line
+	3250 750  3250 900 
+Wire Wire Line
+	3250 900  2800 900 
+Connection ~ 2800 900 
+$Comp
+L power:GND #PWR?
+U 1 1 608A0585
+P 2800 1050
+F 0 "#PWR?" H 2800 800 50  0001 C CNN
+F 1 "GND" H 2805 877 50  0000 C CNN
+F 2 "" H 2800 1050 50  0001 C CNN
+F 3 "" H 2800 1050 50  0001 C CNN
+	1    2800 1050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 1050 2800 900 
+Text GLabel 2800 150  2    50   Input ~ 0
+36V-Power
+Wire Wire Line
+	2800 150  2800 300 
 $EndSCHEMATC

@@ -760,25 +760,25 @@ Text GLabel 6100 3700 2    50   Input ~ 0
 RX-LCD
 Text GLabel 6100 3800 2    50   Input ~ 0
 TX-LCD
-Text GLabel 4150 4100 0    50   Input ~ 0
-HALL-A
 Text GLabel 4150 4200 0    50   Input ~ 0
-HALL-B
+HALL-A
 Text GLabel 4150 4300 0    50   Input ~ 0
-HALL-C
-Text GLabel 6100 4600 2    50   Input ~ 0
-LIN1
-Text GLabel 6100 4400 2    50   Input ~ 0
-LIN2
+HALL-B
 Text GLabel 4150 4400 0    50   Input ~ 0
-Throttle
+HALL-C
+Text GLabel 6100 4500 2    50   Input ~ 0
+LIN1
+Text GLabel 6100 4300 2    50   Input ~ 0
+LIN2
 Text GLabel 4150 4500 0    50   Input ~ 0
-Current_Sensor_IN
+Throttle
 Text GLabel 4150 4600 0    50   Input ~ 0
+Current_Sensor_IN
+Text GLabel 4150 4700 0    50   Input ~ 0
 Voltage_Sensor
-Text GLabel 6100 4100 2    50   Input ~ 0
-LM35
 Text GLabel 6100 4000 2    50   Input ~ 0
+LM35
+Text GLabel 6100 3900 2    50   Input ~ 0
 Brake
 Text GLabel 8250 2700 2    50   Input ~ 0
 PH1
@@ -874,7 +874,7 @@ Connection ~ 1700 3250
 Wire Wire Line
 	1700 3250 1800 3250
 Wire Wire Line
-	5900 4600 6100 4600
+	5900 4500 6100 4500
 Wire Wire Line
 	5900 3800 6100 3800
 Wire Wire Line
@@ -1156,7 +1156,7 @@ L Switch:SW_Push SW2
 U 1 1 6094A449
 P 2050 2000
 F 0 "SW2" H 2050 2285 50  0000 C CNN
-F 1 "SW_Push" H 2050 2194 50  0000 C CNN
+F 1 "OPC" H 2050 2194 50  0000 C CNN
 F 2 "Connector_Molex:Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical" H 2050 2200 50  0001 C CNN
 F 3 "~" H 2050 2200 50  0001 C CNN
 	1    2050 2000
@@ -1394,38 +1394,38 @@ Wire Wire Line
 	1700 350  1700 500 
 Connection ~ 2000 350 
 Wire Wire Line
-	5900 4200 6100 4200
-Text GLabel 6100 4200 2    50   Input ~ 0
+	5900 4100 6100 4100
+Text GLabel 6100 4100 2    50   Input ~ 0
 LIN3
-Text GLabel 6100 4500 2    50   Input ~ 0
+Text GLabel 6100 4400 2    50   Input ~ 0
 HIN2
 Wire Wire Line
-	5900 4500 6100 4500
+	5900 4400 6100 4400
 Text GLabel 6100 4700 2    50   Input ~ 0
 HIN1
 Wire Wire Line
 	6100 4700 5900 4700
 Wire Wire Line
-	6100 4400 5900 4400
-Text GLabel 6100 4300 2    50   Input ~ 0
+	6100 4300 5900 4300
+Text GLabel 6100 4200 2    50   Input ~ 0
 HIN3
 Wire Wire Line
-	6100 4300 5900 4300
-Wire Wire Line
-	6100 4100 5900 4100
+	6100 4200 5900 4200
 Wire Wire Line
 	6100 4000 5900 4000
+Wire Wire Line
+	6100 3900 5900 3900
 Wire Wire Line
 	6150 4800 5900 4800
 $Comp
 L power:+5V #PWR0102
 U 1 1 60D5293D
-P 3750 4900
-F 0 "#PWR0102" H 3750 4750 50  0001 C CNN
-F 1 "+5V" H 3765 5073 50  0000 C CNN
-F 2 "" H 3750 4900 50  0001 C CNN
-F 3 "" H 3750 4900 50  0001 C CNN
-	1    3750 4900
+P 3750 5000
+F 0 "#PWR0102" H 3750 4850 50  0001 C CNN
+F 1 "+5V" H 3765 5173 50  0000 C CNN
+F 2 "" H 3750 5000 50  0001 C CNN
+F 3 "" H 3750 5000 50  0001 C CNN
+	1    3750 5000
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1509,40 +1509,30 @@ F 3 "" H 4100 4800 50  0001 C CNN
 $EndComp
 Text GLabel 10850 2000 2    50   Input ~ 0
 36V-Power
-Text GLabel 7850 1650 2    50   Input ~ 0
-36V-Power
-Text GLabel 7750 3800 2    50   Input ~ 0
-36V-Power
 Text GLabel 10800 4150 2    50   Input ~ 0
 36V-Power
 Text GLabel 10750 6450 2    50   Input ~ 0
 36V-Power
-Text GLabel 7700 6100 2    50   Input ~ 0
-36V-Power
 Wire Wire Line
 	7700 6100 7700 6200
-Wire Wire Line
-	7750 3950 7750 3800
 Connection ~ 7750 3950
 Wire Wire Line
 	7850 1800 7850 1650
 Connection ~ 7850 1800
 Wire Wire Line
+	4150 4400 4350 4400
+Wire Wire Line
 	4150 4300 4350 4300
 Wire Wire Line
 	4150 4200 4350 4200
 Wire Wire Line
-	4150 4100 4350 4100
-Wire Wire Line
 	4350 4800 4100 4800
 Wire Wire Line
-	3750 4900 4350 4900
+	4150 4700 4350 4700
 Wire Wire Line
-	4150 4600 4350 4600
+	4350 4600 4150 4600
 Wire Wire Line
-	4350 4500 4150 4500
-Wire Wire Line
-	4150 4400 4350 4400
+	4150 4500 4350 4500
 $Comp
 L ESP32-DEVKITC-32D:ESP32-DEVKITC-32D U1
 U 1 1 6081E288
@@ -1591,4 +1581,48 @@ Text GLabel 6250 6700 2    50   Input ~ 0
 Current_Sensor_IN
 Wire Wire Line
 	6000 6700 6250 6700
+$Comp
+L power:+12V #PWR0115
+U 1 1 608462B9
+P 7850 1650
+F 0 "#PWR0115" H 7850 1500 50  0001 C CNN
+F 1 "+12V" H 7865 1823 50  0000 C CNN
+F 2 "" H 7850 1650 50  0001 C CNN
+F 3 "" H 7850 1650 50  0001 C CNN
+	1    7850 1650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7750 3950 7750 3800
+$Comp
+L power:+12V #PWR0116
+U 1 1 6084A421
+P 7750 3800
+F 0 "#PWR0116" H 7750 3650 50  0001 C CNN
+F 1 "+12V" H 7765 3973 50  0000 C CNN
+F 2 "" H 7750 3800 50  0001 C CNN
+F 3 "" H 7750 3800 50  0001 C CNN
+	1    7750 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+12V #PWR0117
+U 1 1 6084AD2A
+P 7700 6100
+F 0 "#PWR0117" H 7700 5950 50  0001 C CNN
+F 1 "+12V" H 7715 6273 50  0000 C CNN
+F 2 "" H 7700 6100 50  0001 C CNN
+F 3 "" H 7700 6100 50  0001 C CNN
+	1    7700 6100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3750 5050 4300 5050
+Wire Wire Line
+	4300 5050 4300 4900
+Wire Wire Line
+	4300 4900 4350 4900
+Wire Wire Line
+	3750 5000 3750 5050
+NoConn ~ 5900 4600
 $EndSCHEMATC

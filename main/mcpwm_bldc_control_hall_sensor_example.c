@@ -61,17 +61,17 @@ static const adc_unit_t unit = ADC_UNIT_1;
 #define CAP1_INT_EN BIT(28)  //Capture 1 interrupt bit
 #define CAP2_INT_EN BIT(29)  //Capture 2 interrupt bit
 
-#define GPIO_PWM0A_OUT 19   //Set GPIO 19 as PWM0A
-#define GPIO_PWM0B_OUT 18   //Set GPIO 18 as PWM0B
-#define GPIO_PWM1A_OUT 17   //Set GPIO 17 as PWM1A
-#define GPIO_PWM1B_OUT 16   //Set GPIO 16 as PWM1B
-#define GPIO_PWM2A_OUT 15   //Set GPIO 15 as PWM2A
-#define GPIO_PWM2B_OUT 14   //Set GPIO 14 as PWM2B
+#define GPIO_PWM0A_OUT 15   //Set GPIO 19 as PWM0A
+#define GPIO_PWM0B_OUT 04   //Set GPIO 18 as PWM0B
+#define GPIO_PWM1A_OUT 16   //Set GPIO 17 as PWM1A
+#define GPIO_PWM1B_OUT 17   //Set GPIO 16 as PWM1B
+#define GPIO_PWM2A_OUT 05   //Set GPIO 15 as PWM2A
+#define GPIO_PWM2B_OUT 18   //Set GPIO 14 as PWM2B
 #define GPIO_CAP0_IN   23   //Set GPIO 23 as  CAP0
 #define GPIO_CAP1_IN   25   //Set GPIO 25 as  CAP1
 #define GPIO_CAP2_IN   26   //Set GPIO 26 as  CAP2
 
-#define GPIO_BREAK  05   //Set GPIO 26 as  CAP2
+#define GPIO_BREAK  19   //Set GPIO 26 as  CAP2
 
 
 typedef struct {
