@@ -11,7 +11,7 @@
     (via_costs 50)
     (plane_via_costs 5)
     (start_ripup_costs 100)
-    (start_pass_no 1879)
+    (start_pass_no 904)
     (layer_rule F.Cu
       (active on)
       (preferred_direction horizontal)
@@ -63,12 +63,13 @@
     )
   )
   (class "kicad_default"
-    "Net-(C1-Pad2)" "Voltage_Sensor" "Net-(C2-Pad1)" PH1 PH2 "Net-(C3-Pad1)" "Net-(C4-Pad1)" PH3
-    +12V GND +5V "HALL-A" "HALL-B" "HALL-C" +36V "Net-(F1-Pad1)"
-    "Net-(F1-Pad2)" "Net-(J2-Pad1)" "Net-(J3-Pad1)" Brake Throttle LM35 "TX-LCD" "RX-LCD"
-    "Net-(K1-Pad1)" "36V-Power" "Net-(Q1-Pad1)" "Net-(Q2-Pad1)" "Current_Sensor" "Net-(Q3-Pad1)" "Net-(Q4-Pad1)" "Net-(Q5-Pad1)"
+    "Net-(F1-Pad2)" +36V "Net-(F1-Pad1)" "Net-(J2-Pad1)" "Net-(J3-Pad1)" "36V-Power" PH2 PH1
+    PH3 "Current_Sensor" "Net-(C1-Pad2)" "Voltage_Sensor" "Net-(C2-Pad1)" "Net-(C3-Pad1)" "Net-(C4-Pad1)" +12V
+    GND +5V "HALL-A" "HALL-B" "HALL-C" Brake Throttle LM35
+    "TX-LCD" "RX-LCD" "Net-(K1-Pad1)" "Net-(Q1-Pad1)" "Net-(Q2-Pad1)" "Net-(Q3-Pad1)" "Net-(Q4-Pad1)" "Net-(Q5-Pad1)"
     "Net-(Q6-Pad1)" "Net-(R1-Pad2)" "Net-(R2-Pad2)" HO2 LO2 HO3 LO3 HO1
     LO1 +3V3 LIN3 HIN3 LIN2 HIN2 LIN1 HIN1
+    "Current_Sensor_IN" "Net-(C13-Pad2)"
     (clearance_class "kicad_default")
     (via_rule kicad_default)
     (rule
