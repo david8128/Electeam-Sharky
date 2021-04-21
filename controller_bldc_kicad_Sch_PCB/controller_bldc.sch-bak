@@ -773,7 +773,7 @@ LIN2
 Text GLabel 4150 4400 0    50   Input ~ 0
 Throttle
 Text GLabel 4150 4500 0    50   Input ~ 0
-Current_Sensor
+Current_Sensor_IN
 Text GLabel 4150 4600 0    50   Input ~ 0
 Voltage_Sensor
 Text GLabel 6100 4100 2    50   Input ~ 0
@@ -1137,7 +1137,7 @@ L Switch:SW_SPST SW1
 U 1 1 60902E70
 P 1300 500
 F 0 "SW1" H 1300 735 50  0000 C CNN
-F 1 "SW_SPST" H 1300 644 50  0000 C CNN
+F 1 "ON_OFF" H 1300 644 50  0000 C CNN
 F 2 "Connector_Molex:Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical" H 1300 500 50  0001 C CNN
 F 3 "~" H 1300 500 50  0001 C CNN
 	1    1300 500 
@@ -1313,30 +1313,28 @@ $EndComp
 $Comp
 L Device:R R11
 U 1 1 607F2CED
-P 5750 6700
-F 0 "R11" H 5820 6746 50  0000 L CNN
-F 1 "0.1" H 5820 6655 50  0000 L CNN
-F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5680 6700 50  0001 C CNN
-F 3 "~" H 5750 6700 50  0001 C CNN
-	1    5750 6700
+P 4950 6950
+F 0 "R11" H 5020 6996 50  0000 L CNN
+F 1 "0.1" H 5020 6905 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 4880 6950 50  0001 C CNN
+F 3 "~" H 4950 6950 50  0001 C CNN
+	1    4950 6950
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5750 6850 5750 6950
-Wire Wire Line
-	5750 6550 5750 6400
+	4950 7100 4950 7200
 $Comp
 L power:GND #PWR040
 U 1 1 607F52F7
-P 5750 6950
-F 0 "#PWR040" H 5750 6700 50  0001 C CNN
-F 1 "GND" H 5755 6777 50  0000 C CNN
-F 2 "" H 5750 6950 50  0001 C CNN
-F 3 "" H 5750 6950 50  0001 C CNN
-	1    5750 6950
+P 4950 7200
+F 0 "#PWR040" H 4950 6950 50  0001 C CNN
+F 1 "GND" H 4955 7027 50  0000 C CNN
+F 2 "" H 4950 7200 50  0001 C CNN
+F 3 "" H 4950 7200 50  0001 C CNN
+	1    4950 7200
 	1    0    0    -1  
 $EndComp
-Text GLabel 5750 6400 2    50   Input ~ 0
+Text GLabel 4950 6350 2    50   Input ~ 0
 Current_Sensor
 Wire Wire Line
 	2750 2900 2800 2900
@@ -1558,4 +1556,39 @@ F 5 "Espressif Systems" H 5100 4100 50  0001 L BNN "MANUFACTURER"
 	1    5150 4200
 	1    0    0    -1  
 $EndComp
+$Comp
+L Device:R R16
+U 1 1 608850A5
+P 5400 6700
+F 0 "R16" V 5193 6700 50  0000 C CNN
+F 1 "2.2k" V 5284 6700 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5330 6700 50  0001 C CNN
+F 3 "~" H 5400 6700 50  0001 C CNN
+	1    5400 6700
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:C_Small C13
+U 1 1 60885D9B
+P 5900 6700
+F 0 "C13" V 5671 6700 50  0000 C CNN
+F 1 "0.1uF" V 5762 6700 50  0000 C CNN
+F 2 "Capacitor_THT:C_Disc_D7.5mm_W5.0mm_P10.00mm" H 5900 6700 50  0001 C CNN
+F 3 "~" H 5900 6700 50  0001 C CNN
+	1    5900 6700
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4950 6350 4950 6700
+Connection ~ 4950 6700
+Wire Wire Line
+	4950 6700 4950 6800
+Wire Wire Line
+	4950 6700 5250 6700
+Wire Wire Line
+	5550 6700 5800 6700
+Text GLabel 6250 6700 2    50   Input ~ 0
+Current_Sensor_IN
+Wire Wire Line
+	6000 6700 6250 6700
 $EndSCHEMATC
