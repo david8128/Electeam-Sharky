@@ -1,2 +1,2 @@
-idf_component_register(SRCS "mcpwm_bldc_control_hall_sensor_example.c"
+idf_component_register(SRCS "sharky.c"
                     INCLUDE_DIRS ".")
