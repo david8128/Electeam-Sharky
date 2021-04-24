@@ -40,7 +40,7 @@
 #include "driver/uart.h"
 #include "soc/uart_struct.h"
 #include "string.h"
-#include "esp32-nextion.h"
+// #include "esp32-nextion.h"
 
 //Aqui se mostrarán los cambios al código para la pantalla
 
@@ -256,10 +256,12 @@ static void mcpwm_example_bldc_control(void *arg)
     //1. mcpwm gpio initialization
     mcpwm_example_gpio_initialize();
 
+    
+    uint32_t pwm_config_frequency = 12000;
     //2. initial mcpwm configuration
     printf("Configuring Initial Parameters of mcpwm bldc control...\n");
     mcpwm_config_t pwm_config;
-    pwm_config.frequency = 1000;    //frequency = 1000Hz
+    pwm_config.frequency = pwm_config_frequency;    //frequency = 1000Hz
     pwm_config.cmpr_a = 50.0;    //duty cycle of PWMxA = 50.0%
     pwm_config.cmpr_b = 0;    //duty cycle of PWMxb = 50.0%
     pwm_config.counter_mode = MCPWM_UP_COUNTER;
@@ -287,7 +289,7 @@ static void mcpwm_example_bldc_control(void *arg)
         if(gpio_get_level(GPIO_BREAK) == 1){
             printf("hall_sen val: %d\n", hall_sensor_value);
             mcpwm_config_t pwm_config;
-            pwm_config.frequency = 1000;    //frequency = 1000Hz
+            pwm_config.frequency = pwm_config_frequency;    //frequency = 1000Hz
             duty_cycle = (adc_reading_MCPWM-950.0)/31.45;
             if( duty_cycle < 0.0 ){
                 duty_cycle = 0.0;    
@@ -378,7 +380,7 @@ static void mcpwm_example_bldc_control(void *arg)
         }else{
             printf("FRENADO!\n");
             mcpwm_config_t pwm_config;
-            pwm_config.frequency = 1000;    //frequency = 1000Hz
+            pwm_config.frequency = pwm_config_frequency;    //frequency = 1000Hz
             pwm_config.cmpr_a = 0.0;    //duty cycle of PWMxA = 50.0%
             pwm_config.cmpr_b = 0.0;    //duty cycle of PWMxb = 50.0%
             pwm_config.counter_mode = MCPWM_UP_COUNTER;
