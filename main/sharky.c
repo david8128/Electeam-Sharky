@@ -32,6 +32,18 @@
 #include "driver/adc.h"
 #include "esp_adc_cal.h"
 
+//Include for Nextion
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_system.h"
+#include "esp_log.h"
+#include "driver/uart.h"
+#include "soc/uart_struct.h"
+#include "string.h"
+#include "esp32-nextion.h"
+
+//Aqui se mostrarán los cambios al código para la pantalla
+
 // Define for ADC
 #define DEFAULT_VREF    1100        //Use adc2_vref_to_gpio() to obtain a better estimate
 #define NO_OF_SAMPLES   64          //Multisampling
