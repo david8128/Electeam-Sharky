@@ -1,10 +1,27 @@
 # Electeam-Sharky-ESP32
-This is the firmware for the ESP32 WROOM 32 microcontroller where throttle, break, LCD screen, motor and more systems are integrated.
+This is the firmware for the ESP32-WROOM-32 microcontroller where throttle, break, LCD screen, motor and more systems are integrated.
 ![Schematic](https://drive.google.com/uc?export=view&id=18NEBAM3f7z6DvfUNkW7gQg9mj4XFdRmA) 
 
-This is a result of a modification of the MCPWM BLDC motor control(hall sensor feedback) Example from ESP-IDF library.
+> The PCB Kicad folder is located in (controller_bldc_kicad_Sch_PCB/)[https://github.com/david8128/Electeam-Sharky-ESP32/tree/main/controller_bldc_kicad_Sch_PCB]
+## Electrical Specifications for the PCB electronics
 
-Here you have the documentation of the example:
+#### Power 
+Relay for the Operator Presence Control - aka. Death Man Security System (HAT901 12VDC 20A) = 0.96 W
+>MOSFET has been considered for de OPC but the consumtion is higher (Using IRF1010N with a )
+For this project is used the MCPWM BLDC motor control (hall sensor feedback) example from ESP-IDF library.
+
+#### Battery
+When battery is fully charged the voltage is 42V. The BMS open the discharging circuit when the battery voltage is under 32V. 
+*This modes will be reviewed under the light of the Shell Echo Marathon Competition.*
+## Modes
+
+### Acceleration Optimized
+
+### Soft Start
+
+### Manual
+
+Here you have the documentation of the MCPWM-Hall_Sensor example:
 
 ## MCPWM BLDC motor control(hall sensor feedback) Example
 
