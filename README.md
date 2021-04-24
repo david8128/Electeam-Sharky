@@ -11,7 +11,10 @@ Relay for the Operator Presence Control - aka. Death Man Security System (HAT901
 For this project is used the MCPWM BLDC motor control (hall sensor feedback) example from ESP-IDF library.
 
 #### Battery
-When battery is fully charged the voltage is 42V. The BMS open the discharging circuit when the battery voltage is under 32V. 
+When battery is fully charged the voltage is 40.6V. The BMS open the discharging circuit when the battery voltage is under 32V. 
+
+The energy or maximum energetic storage capacity of the battery is 320Wh.
+
 *This modes will be reviewed under the light of the Shell Echo Marathon Competition.*
 ## Modes
 
