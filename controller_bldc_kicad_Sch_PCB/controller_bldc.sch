@@ -322,17 +322,6 @@ Wire Wire Line
 Wire Wire Line
 	5350 550  5550 550 
 $Comp
-L Connector:Conn_01x02_Male J2
-U 1 1 606A4893
-P 750 1450
-F 0 "J2" V 600 1400 50  0000 C CNN
-F 1 "Emergency Button OUT" V 700 1400 50  0000 C CNN
-F 2 "Connector_Phoenix_GMSTB:PhoenixContact_GMSTBA_2,5_2-G_1x02_P7.50mm_Horizontal" H 750 1450 50  0001 C CNN
-F 3 "~" H 750 1450 50  0001 C CNN
-	1    750  1450
-	0    1    1    0   
-$EndComp
-$Comp
 L Connector:Conn_01x02_Male J3
 U 1 1 607D7C4D
 P 1700 1450
@@ -343,21 +332,6 @@ F 3 "~" H 1700 1450 50  0001 C CNN
 	1    1700 1450
 	0    1    1    0   
 $EndComp
-$Comp
-L power:+36V #PWR03
-U 1 1 607E0827
-P 650 1800
-F 0 "#PWR03" H 650 1650 50  0001 C CNN
-F 1 "+36V" H 665 1973 50  0000 C CNN
-F 2 "" H 650 1800 50  0001 C CNN
-F 3 "" H 650 1800 50  0001 C CNN
-	1    650  1800
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	650  1800 650  1650
-Wire Wire Line
-	750  1650 1600 1650
 Text GLabel 2800 2900 2    50   Input ~ 0
 36V-Power
 Text GLabel 10800 5300 2    50   Input ~ 0
@@ -1046,7 +1020,7 @@ U 1 1 608F8601
 P 2550 2400
 F 0 "K1" H 2980 2446 50  0000 L CNN
 F 1 "ADW11" H 2980 2355 50  0000 L CNN
-F 2 "Relay_THT:Relay_1P1T_NO_10x24x18.8mm_Panasonic_ADW11xxxxW_THT" H 3875 2350 50  0001 C CNN
+F 2 "Relay_THT:Relay_SPDT_RAYEX-L90" H 3875 2350 50  0001 C CNN
 F 3 "https://www.panasonic-electric-works.com/pew/es/downloads/ds_dw_hl_en.pdf" H 2550 2400 50  0001 C CNN
 	1    2550 2400
 	1    0    0    -1  
@@ -1545,7 +1519,7 @@ U 1 1 608A3235
 P 1000 5700
 F 0 "#PS5V0101" H 1000 6115 50  0000 C CNN
 F 1 "LM2596DC-DC_copy" H 1000 6024 50  0000 C CNN
-F 2 "" H 1000 5700 50  0001 C CNN
+F 2 "Package_TO_SOT_THT_Electeam:LM2596DC-DC-HW411" H 1000 5700 50  0001 C CNN
 F 3 "" H 1000 5700 50  0001 C CNN
 	1    1000 5700
 	1    0    0    -1  
@@ -1556,7 +1530,7 @@ U 1 1 608995B8
 P 1450 4000
 F 0 "#PS12V0101" H 1450 4415 50  0000 C CNN
 F 1 "LM2596DC-DC" H 1450 4324 50  0000 C CNN
-F 2 "" H 1450 4000 50  0001 C CNN
+F 2 "Package_TO_SOT_THT_Electeam:LM2596DC-DC-HW411" H 1450 4000 50  0001 C CNN
 F 3 "" H 1450 4000 50  0001 C CNN
 	1    1450 4000
 	1    0    0    -1  
@@ -2019,4 +1993,19 @@ Wire Wire Line
 	4200 2700 3950 2700
 Wire Wire Line
 	3950 2700 3950 2750
+$Comp
+L power:+36V #PWR03
+U 1 1 607E0827
+P 1300 1850
+F 0 "#PWR03" H 1300 1700 50  0001 C CNN
+F 1 "+36V" H 1315 2023 50  0000 C CNN
+F 2 "" H 1300 1850 50  0001 C CNN
+F 3 "" H 1300 1850 50  0001 C CNN
+	1    1300 1850
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	1600 1650 1300 1650
+Wire Wire Line
+	1300 1650 1300 1850
 $EndSCHEMATC
