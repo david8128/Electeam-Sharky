@@ -1,4 +1,4 @@
-19616784290691786
+19620023368447694
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -73238,8 +73238,22 @@ LM2596DC-DC-HW411
 
 
 0
+4
+4
+Package_TO_SOT_THT_Electeam
+LM2596DCSourcePin2_Electeam
+
+
 0
+5
+5
+Package_TO_SOT_THT_Electeam
+LM2596DCSource_Electeam
+
+
 0
+4
+4
 Package_TO_SOT_THT_Electeam
 MODULE_ESP32-DEVKITC-32D
 

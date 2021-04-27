@@ -1,3 +1,4 @@
 (sym_lib_table
   (lib (name controller_bldc-rescue)(type Legacy)(uri ${KIPRJMOD}/controller_bldc-rescue.lib)(options "")(descr ""))
+  (lib (name Converter_DCDC_Electeam)(type Legacy)(uri ${KIPRJMOD}/libraries/Converter_DCDC.lib)(options "")(descr ""))
 )
