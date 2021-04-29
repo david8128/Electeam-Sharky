@@ -39,12 +39,16 @@
 
 static esp_adc_cal_characteristics_t *adc_chars;
 #if CONFIG_IDF_TARGET_ESP32
-static const adc_channel_t channel = ADC_CHANNEL_6;     //GPIO34 if ADC1, GPIO14 if ADC2
-static const adc_channel_t channel2 = ADC_CHANNEL_7;     //GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel = ADC_CHANNEL_0;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
+static const adc_channel_t channel2 = ADC_CHANNEL_3;     //CURRENT SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel3 = ADC_CHANNEL_6;     //TEMPERATURE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel4 = ADC_CHANNEL_7;     //VOLTAGE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
 static const adc_bits_width_t width = ADC_WIDTH_BIT_12;
 #elif CONFIG_IDF_TARGET_ESP32S2
-static const adc_channel_t channel = ADC_CHANNEL_6;     // GPIO7 if ADC1, GPIO17 if ADC2
-static const adc_channel_t channel2 = ADC_CHANNEL_7;     //GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel = ADC_CHANNEL_0;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
+static const adc_channel_t channel2 = ADC_CHANNEL_3;     //CURRENT SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel3 = ADC_CHANNEL_6;     //TEMPERATURE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel4 = ADC_CHANNEL_7;     //VOLTAGE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
 static const adc_bits_width_t width = ADC_WIDTH_BIT_13;
 #endif
 static const adc_atten_t atten = ADC_ATTEN_DB_11;
@@ -87,6 +91,8 @@ static uint32_t hall_sensor_previous = 0;
 xQueueHandle cap_queue;
 xQueueHandle cap_queue2;
 xQueueHandle cap_queue3;
+xQueueHandle cap_queue4;
+xQueueHandle cap_queue5;
 
 static mcpwm_dev_t *MCPWM[2] = {&MCPWM0, &MCPWM1};
 
@@ -270,29 +276,38 @@ static void mcpwm_example_bldc_control(void *arg)
     mcpwm_isr_register(MCPWM_UNIT_0, isr_handler, NULL, ESP_INTR_FLAG_IRAM, NULL);  //Set ISR Handler
     
     //According to the hall sensor input value take action on PWM0A/0B/1A/1B/2A/2B
-    uint32_t adc_reading_MCPWM = 0;
+    uint32_t adc_reading_Throttle = 0;
     uint32_t adc_reading_Current = 0;
+    uint32_t adc_reading_Temperature = 0;
+    uint32_t adc_reading_Voltage = 0;
     float duty_cycle = 0.0;
-    float adc_current = 0.0;
-    float adc_Throttle = 0.0;
+    float vReading_Throttle = 0.0;
+    float vReading_Current = 0.0;
+    float vReading_Temperature = 0.0;
+    float vReading_Voltage = 0.0;
     while (1) {
-        xQueueReceive(cap_queue2, &adc_reading_MCPWM, portMAX_DELAY);
+        xQueueReceive(cap_queue2, &adc_reading_Throttle, portMAX_DELAY);
         xQueueReceive(cap_queue3, &adc_reading_Current, portMAX_DELAY);
-        adc_Throttle = (adc_reading_MCPWM*3.3/4095);
-        adc_current = (adc_reading_Current*3.3/4095);
-        printf("Current mV: %f\n", adc_current);
-        printf("Thorttle mV: %f\n", adc_Throttle);
-        printf("hall_sen_val: %d\n", hall_sensor_value);
+        xQueueReceive(cap_queue4, &adc_reading_Temperature, portMAX_DELAY);
+        xQueueReceive(cap_queue5, &adc_reading_Voltage, portMAX_DELAY);
+        vReading_Throttle = (adc_reading_Throttle*3.3/4095);
+        vReading_Current = (adc_reading_Current*3.3/4095);
+        vReading_Temperature = ((adc_reading_Temperature*3.3/4095)+0.1)*19.4;
+        vReading_Voltage = (adc_reading_Voltage*3.3/4095);
+        printf("Current mV: %f\n", vReading_Current);
+        printf("Thorttle mV: %f\n", vReading_Throttle);
+        printf("Temperature mV: %f\n", vReading_Temperature);
+        printf("Voltage mV: %f\n", vReading_Voltage);
         hall_sensor_value = (gpio_get_level(GPIO_CAP2_IN) * 1) + (gpio_get_level(GPIO_CAP1_IN) * 2) + (gpio_get_level(GPIO_CAP0_IN) * 4);
         if(gpio_get_level(GPIO_BREAK) == 1){
             printf("hall_sen_val: %d\n", hall_sensor_value);
             mcpwm_config_t pwm_config;
             pwm_config.frequency = 1000;    //frequency = 1000Hz
-            duty_cycle = (adc_reading_MCPWM-950.0)/31.45;
+            duty_cycle = (adc_reading_Throttle-950.0)/31.45;
             if( duty_cycle < 0.0 ){
                 duty_cycle = 0.0;    
             }else{
-                duty_cycle = (adc_reading_MCPWM-950)/31.45;
+                duty_cycle = (adc_reading_Throttle-950)/31.45;
             }
             printf("duty_cycle: %f\n", duty_cycle);
             pwm_config.cmpr_a = duty_cycle;
@@ -373,10 +388,15 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0); //Set PWM0A to duty mode one
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, MCPWM_DUTY_MODE_0); //Set PWM0B back to duty mode zero
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
+            }if(hall_sensor_value != 0){
+                fprintf(stdout,"\33[2K\033[7A");
+            }else{
+                fprintf(stdout,"\33[2K\033[6A");
             }
             hall_sensor_previous = hall_sensor_value;
         }else{
             printf("FRENADO!\n");
+            fprintf(stdout,"\33[2K\033[5A");
             mcpwm_config_t pwm_config;
             pwm_config.frequency = 1000;    //frequency = 1000Hz
             pwm_config.cmpr_a = 0.0;    //duty cycle of PWMxA = 50.0%
@@ -442,9 +462,13 @@ static void setup_print_ADC(void *parameter)
         adc1_config_width(width);
         adc1_config_channel_atten(channel, atten);
         adc1_config_channel_atten(channel2, atten);
+        adc1_config_channel_atten(channel3, atten);
+        adc1_config_channel_atten(channel4, atten);
     } else {
         adc2_config_channel_atten((adc2_channel_t)channel, atten);
         adc2_config_channel_atten((adc2_channel_t)channel2, atten);
+        adc2_config_channel_atten((adc2_channel_t)channel3, atten);
+        adc2_config_channel_atten((adc2_channel_t)channel4, atten);
     }
 
     //Characterize ADC
@@ -456,27 +480,41 @@ static void setup_print_ADC(void *parameter)
     while (1) {
         uint32_t adc_reading = 0;
         uint32_t adc_reading2 = 0;
+        uint32_t adc_reading3 = 0;
+        uint32_t adc_reading4 = 0;
         //Multisampling
         for (int i = 0; i < NO_OF_SAMPLES; i++) {
             if (unit == ADC_UNIT_1) {
                 adc_reading += adc1_get_raw((adc1_channel_t)channel);
                 adc_reading2 += adc1_get_raw((adc1_channel_t)channel2);
+                adc_reading3 += adc1_get_raw((adc1_channel_t)channel3);
+                adc_reading4 += adc1_get_raw((adc1_channel_t)channel4);
             } else {
                 int raw;
                 int raw2;
+                int raw3;
+                int raw4;
                 adc2_get_raw((adc2_channel_t)channel, width, &raw);
                 adc2_get_raw((adc2_channel_t)channel2, width, &raw2);
+                adc2_get_raw((adc2_channel_t)channel2, width, &raw3);
+                adc2_get_raw((adc2_channel_t)channel2, width, &raw4);
                 adc_reading += raw;
                 adc_reading2 += raw2;
+                adc_reading3 += raw3;
+                adc_reading4 += raw4;
             }
         }
         adc_reading /= NO_OF_SAMPLES;
         adc_reading2 /= NO_OF_SAMPLES;
+        adc_reading3 /= NO_OF_SAMPLES;
+        adc_reading4 /= NO_OF_SAMPLES;
         //Convert adc_reading to voltage in mV
         // uint32_t voltage = esp_adc_cal_raw_to_voltage(adc_reading, adc_chars);
         // printf("Raw: %d\tVoltage: %dmV\n", adc_reading, voltage);
         xQueueSend(cap_queue2, &adc_reading, portMAX_DELAY);
         xQueueSend(cap_queue3, &adc_reading2, portMAX_DELAY);
+        xQueueSend(cap_queue4, &adc_reading3, portMAX_DELAY);
+        xQueueSend(cap_queue5, &adc_reading4, portMAX_DELAY);
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
@@ -492,10 +530,12 @@ void app_main(void)
     cap_queue = xQueueCreate(1, sizeof(capture)); //comment if you don't want to use capture module
     cap_queue2 = xQueueCreate(1, sizeof(uint32_t)); //comment if you don't want to use capture module
     cap_queue3 = xQueueCreate(1, sizeof(uint32_t)); //comment if you don't want to use capture module
+    cap_queue4 = xQueueCreate(1, sizeof(uint32_t)); //comment if you don't want to use capture module
+    cap_queue5 = xQueueCreate(1, sizeof(uint32_t)); //comment if you don't want to use capture module
 #if GPIO_HALL_TEST_SIGNAL
     xTaskCreate(gpio_test_signal, "gpio_test_signal", 2048, NULL, 2, NULL);
 #endif
-    if(cap_queue == NULL || cap_queue2 == NULL || cap_queue3 == NULL){
+    if(cap_queue == NULL || cap_queue2 == NULL || cap_queue3 == NULL || cap_queue4 == NULL || cap_queue5 == NULL){
         printf("Error creating the cap_queue or cap_queue2 or cap_queue3");
     }
     xTaskCreate(disp_captured_signal, "mcpwm_config", 4096, NULL, 5, NULL);  //comment if you don't want to use capture module
