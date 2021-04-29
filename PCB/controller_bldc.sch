@@ -417,7 +417,7 @@ F 3 "" H 6550 6150 50  0001 C CNN
 	1    6550 6150
 	1    0    0    -1  
 $EndComp
-Text GLabel 6150 750  2    50   Input ~ 0
+Text GLabel 5750 3350 0    50   Input ~ 0
 Throttle
 $Comp
 L pspice:DIODE D1
@@ -620,7 +620,7 @@ Text GLabel 7450 2700 0    50   Input ~ 0
 LIN1
 Text GLabel 7450 2600 0    50   Input ~ 0
 HIN1
-Text GLabel 6900 950  2    50   Input ~ 0
+Text GLabel 7050 950  2    50   Input ~ 0
 Brake
 Text GLabel 6500 5050 2    50   Input ~ 0
 RX-LCD
@@ -963,30 +963,30 @@ Wire Wire Line
 $Comp
 L Device:R R12
 U 1 1 6097CC14
-P 6800 650
-F 0 "R12" H 6870 696 50  0000 L CNN
-F 1 "1.5k" V 6800 550 50  0000 L CNN
-F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 6730 650 50  0001 C CNN
-F 3 "~" H 6800 650 50  0001 C CNN
-	1    6800 650 
+P 6950 650
+F 0 "R12" H 7020 696 50  0000 L CNN
+F 1 "1.5k" V 6950 550 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 6880 650 50  0001 C CNN
+F 3 "~" H 6950 650 50  0001 C CNN
+	1    6950 650 
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:+3V3 #PWR0111
 U 1 1 6099D286
-P 6800 450
-F 0 "#PWR0111" H 6800 300 50  0001 C CNN
-F 1 "+3V3" H 6815 623 50  0000 C CNN
-F 2 "" H 6800 450 50  0001 C CNN
-F 3 "" H 6800 450 50  0001 C CNN
-	1    6800 450 
+P 6950 450
+F 0 "#PWR0111" H 6950 300 50  0001 C CNN
+F 1 "+3V3" H 6965 623 50  0000 C CNN
+F 2 "" H 6950 450 50  0001 C CNN
+F 3 "" H 6950 450 50  0001 C CNN
+	1    6950 450 
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6800 800  6800 950 
+	6950 800  6950 950 
 Wire Wire Line
-	6800 950  6900 950 
-Connection ~ 6800 950 
+	6950 950  7050 950 
+Connection ~ 6950 950 
 $Comp
 L power:GND #PWR0112
 U 1 1 609BC705
@@ -999,7 +999,7 @@ F 3 "" H 6850 1150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6800 450  6800 500 
+	6950 450  6950 500 
 $Comp
 L Device:R R11
 U 1 1 607F2CED
@@ -1033,12 +1033,12 @@ Wire Wire Line
 $Comp
 L power:+5V #PWR0113
 U 1 1 60B56613
-P 6600 850
-F 0 "#PWR0113" H 6600 700 50  0001 C CNN
-F 1 "+5V" H 6615 1023 50  0000 C CNN
-F 2 "" H 6600 850 50  0001 C CNN
-F 3 "" H 6600 850 50  0001 C CNN
-	1    6600 850 
+P 6750 850
+F 0 "#PWR0113" H 6750 700 50  0001 C CNN
+F 1 "+5V" H 6765 1023 50  0000 C CNN
+F 2 "" H 6750 850 50  0001 C CNN
+F 3 "" H 6750 850 50  0001 C CNN
+	1    6750 850 
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1329,7 +1329,7 @@ $EndComp
 Wire Wire Line
 	2650 7900 2650 7950
 $Comp
-L MC1458P:MC1458P U2
+L controller_bldc-rescue:MC1458P-MC1458P U2
 U 1 1 608585E5
 P 4650 2600
 F 0 "U2" H 4650 3270 50  0000 C CNN
@@ -1914,44 +1914,44 @@ Wire Wire Line
 	5700 2150 5800 2150
 Wire Wire Line
 	5800 2150 5800 2200
-Text GLabel 5400 3600 0    50   Input ~ 0
+Text GLabel 5750 3700 0    50   Input ~ 0
 Current_Sensor_IN
-Text GLabel 6100 3600 2    50   Input ~ 0
+Text GLabel 6450 3700 2    50   Input ~ 0
 1IN-
 $Comp
 L Device:R R26
 U 1 1 613AAA2C
-P 5750 3600
-F 0 "R26" V 5650 3600 50  0000 C CNN
-F 1 "2.5k" V 5750 3600 50  0000 C CNN
-F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5680 3600 50  0001 C CNN
-F 3 "~" H 5750 3600 50  0001 C CNN
-	1    5750 3600
+P 6100 3700
+F 0 "R26" V 6000 3700 50  0000 C CNN
+F 1 "2.5k" V 6100 3700 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 6030 3700 50  0001 C CNN
+F 3 "~" H 6100 3700 50  0001 C CNN
+	1    6100 3700
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	5400 3600 5600 3600
+	5750 3700 5950 3700
 Wire Wire Line
-	5900 3600 6100 3600
-Text GLabel 5400 3950 0    50   Input ~ 0
+	6250 3700 6450 3700
+Text GLabel 5750 4050 0    50   Input ~ 0
 LM35
-Text GLabel 6100 3950 2    50   Input ~ 0
+Text GLabel 6450 4050 2    50   Input ~ 0
 2IN-
 $Comp
 L Device:R R27
 U 1 1 6140BDEB
-P 5750 3950
-F 0 "R27" V 5650 3950 50  0000 C CNN
-F 1 "2.5k" V 5750 3950 50  0000 C CNN
-F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5680 3950 50  0001 C CNN
-F 3 "~" H 5750 3950 50  0001 C CNN
-	1    5750 3950
+P 6100 4050
+F 0 "R27" V 6000 4050 50  0000 C CNN
+F 1 "2.5k" V 6100 4050 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 6030 4050 50  0001 C CNN
+F 3 "~" H 6100 4050 50  0001 C CNN
+	1    6100 4050
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	5400 3950 5600 3950
+	5750 4050 5950 4050
 Wire Wire Line
-	5900 3950 6100 3950
+	6250 4050 6450 4050
 Wire Wire Line
 	4550 5050 4750 5050
 Wire Wire Line
@@ -2062,10 +2062,6 @@ Wire Wire Line
 Wire Wire Line
 	6050 1050 6200 1050
 Wire Wire Line
-	6050 950  6800 950 
-Wire Wire Line
-	6050 850  6600 850 
-Wire Wire Line
 	6050 750  6150 750 
 Wire Wire Line
 	6050 650  6400 650 
@@ -2124,10 +2120,10 @@ F 3 "" H 6150 1650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:-5V #PWR?
+L power:-5V #PWR0137
 U 1 1 608A9160
 P 3350 5600
-F 0 "#PWR?" H 3350 5700 50  0001 C CNN
+F 0 "#PWR0137" H 3350 5700 50  0001 C CNN
 F 1 "-5V" H 3365 5773 50  0000 C CNN
 F 2 "" H 3350 5600 50  0001 C CNN
 F 3 "" H 3350 5600 50  0001 C CNN
@@ -2137,4 +2133,27 @@ $EndComp
 Wire Wire Line
 	3350 5700 3350 5600
 Connection ~ 3350 5700
+Text GLabel 6150 750  2    50   Input ~ 0
+Throttle_Raw
+Wire Wire Line
+	6050 850  6750 850 
+Wire Wire Line
+	6050 950  6950 950 
+Text GLabel 6450 3350 2    50   Input ~ 0
+Throttle_Raw
+$Comp
+L Device:R R29
+U 1 1 6094A225
+P 6100 3350
+F 0 "R29" V 6000 3350 50  0000 C CNN
+F 1 "2.5k" V 6100 3350 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 6030 3350 50  0001 C CNN
+F 3 "~" H 6100 3350 50  0001 C CNN
+	1    6100 3350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6250 3350 6450 3350
+Wire Wire Line
+	5750 3350 5950 3350
 $EndSCHEMATC
