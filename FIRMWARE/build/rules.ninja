@@ -1428,7 +1428,7 @@ rule CXX_STATIC_LIBRARY_LINKER____idf_main
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = C:\Users\david\.espressif\tools\cmake\3.16.4\bin\cmake.exe -SC:\Users\david\espProjects\Electeam-Sharky-ESP32 -BC:\Users\david\espProjects\Electeam-Sharky-ESP32\build
+  command = C:\Users\david\.espressif\tools\cmake\3.16.4\bin\cmake.exe -SC:\Users\david\espProjects\Electeam-Sharky-ESP32\FIRMWARE -BC:\Users\david\espProjects\Electeam-Sharky-ESP32\FIRMWARE\build
   description = Re-running CMake...
   generator = 1
 

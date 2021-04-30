@@ -10,6 +10,8 @@ Relay for the Operator Presence Control - aka. Death Man Security System (HAT901
 >MOSFET has been considered for de OPC but the consumtion is higher (Using IRF1010N with a )
 For this project is used the MCPWM BLDC motor control (hall sensor feedback) example from ESP-IDF library.
 
+As shown in Schematic there were used two [LM2596 DC-DC HW-411](http://tpelectronic.ir/datasheets/20150123144301750.pdf) converters 
+
 #### Battery
 When battery is fully charged the voltage is 40.6V. The BMS open the discharging circuit when the battery voltage is under 32V. 
 

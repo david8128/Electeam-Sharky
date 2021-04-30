@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/david/espProjects/Electeam-Sharky-ESP32/main
+# Install script for directory: C:/Users/david/espProjects/Electeam-Sharky-ESP32/FIRMWARE/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

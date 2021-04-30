@@ -1,4 +1,4 @@
-/* * Data converted from C:/Users/david/espProjects/Electeam-Sharky-ESP32/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from C:/Users/david/espProjects/Electeam-Sharky-ESP32/FIRMWARE/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded

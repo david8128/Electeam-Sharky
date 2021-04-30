@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/david/espProjects/Electeam-Sharky-ESP32
+# Install script for directory: C:/Users/david/espProjects/Electeam-Sharky-ESP32/FIRMWARE
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/david/espProjects/Electeam-Sharky-ESP32/build/esp-idf/cmake_install.cmake")
+  include("C:/Users/david/espProjects/Electeam-Sharky-ESP32/FIRMWARE/build/esp-idf/cmake_install.cmake")
 
 endif()
 
@@ -46,5 +46,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/david/espProjects/Electeam-Sharky-ESP32/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/david/espProjects/Electeam-Sharky-ESP32/FIRMWARE/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

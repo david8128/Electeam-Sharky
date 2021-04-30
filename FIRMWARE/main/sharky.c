@@ -13,6 +13,13 @@
  * Edit the macros at the top of mcpwm_example_basic_config.c to enable/disable the submodules which are used in the example.
  */
 
+/*  Registro de Fallas
+
+ *  Error en acelerador, voltaje de salida del acelerador sin oprimir: 3.2V
+ *  Voltaje de regulación en la segunda fuente de 18V -> Concetar resistencia de consumo en la salida de 100 ohms 
+*/
+
+
 // Include FreeRTOS for both MCPWM and ADC
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -39,16 +46,16 @@
 
 static esp_adc_cal_characteristics_t *adc_chars;
 #if CONFIG_IDF_TARGET_ESP32
-static const adc_channel_t channel = ADC_CHANNEL_0;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
-static const adc_channel_t channel2 = ADC_CHANNEL_3;     //CURRENT SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
-static const adc_channel_t channel3 = ADC_CHANNEL_6;     //TEMPERATURE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
-static const adc_channel_t channel4 = ADC_CHANNEL_7;     //VOLTAGE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel = ADC_CHANNEL_6;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
+static const adc_channel_t channel2 = ADC_CHANNEL_7;     //CURRENT SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel3 = ADC_CHANNEL_4;     //TEMPERATURE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel4 = ADC_CHANNEL_5;     //VOLTAGE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
 static const adc_bits_width_t width = ADC_WIDTH_BIT_12;
 #elif CONFIG_IDF_TARGET_ESP32S2
-static const adc_channel_t channel = ADC_CHANNEL_0;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
-static const adc_channel_t channel2 = ADC_CHANNEL_3;     //CURRENT SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
-static const adc_channel_t channel3 = ADC_CHANNEL_6;     //TEMPERATURE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
-static const adc_channel_t channel4 = ADC_CHANNEL_7;     //VOLTAGE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel = ADC_CHANNEL_6;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
+static const adc_channel_t channel2 = ADC_CHANNEL_7;     //CURRENT SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel3 = ADC_CHANNEL_4;     //TEMPERATURE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+static const adc_channel_t channel4 = ADC_CHANNEL_5;     //VOLTAGE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
 static const adc_bits_width_t width = ADC_WIDTH_BIT_13;
 #endif
 static const adc_atten_t atten = ADC_ATTEN_DB_11;
@@ -73,9 +80,9 @@ static const adc_unit_t unit = ADC_UNIT_1;
 #define GPIO_PWM1B_OUT 17   //Set GPIO 16 as PWM1B
 #define GPIO_PWM2A_OUT 05   //Set GPIO 15 as PWM2A
 #define GPIO_PWM2B_OUT 18   //Set GPIO 14 as PWM2B
-#define GPIO_CAP0_IN   23   //Set GPIO 23 as  CAP0
-#define GPIO_CAP1_IN   25   //Set GPIO 25 as  CAP1
-#define GPIO_CAP2_IN   26   //Set GPIO 26 as  CAP2
+#define GPIO_CAP0_IN   25   //Set GPIO 23 as  CAP0
+#define GPIO_CAP1_IN   26   //Set GPIO 25 as  CAP1
+#define GPIO_CAP2_IN   27   //Set GPIO 26 as  CAP2
 
 #define GPIO_BREAK  19   //Set GPIO 26 as  CAP2
 
@@ -294,13 +301,14 @@ static void mcpwm_example_bldc_control(void *arg)
         vReading_Current = (adc_reading_Current*3.3/4095);
         vReading_Temperature = ((adc_reading_Temperature*3.3/4095)+0.1)*19.4;
         vReading_Voltage = (adc_reading_Voltage*3.3/4095);
-        printf("Current mV: %f\n", vReading_Current);
-        printf("Thorttle mV: %f\n", vReading_Throttle);
-        printf("Temperature mV: %f\n", vReading_Temperature);
-        printf("Voltage mV: %f\n", vReading_Voltage);
+        printf("Current [V]\t: %f\n", vReading_Current);
+        printf("Thorttle [V]\t: %f\n", vReading_Throttle);
+        printf("Temperature [V]\t: %f\n", vReading_Temperature);
+        printf("Voltage [V]\t: %f\n", vReading_Voltage);
+        printf("Hall Sensors\t: %d %d %d\n",gpio_get_level(GPIO_CAP0_IN),gpio_get_level(GPIO_CAP1_IN),gpio_get_level(GPIO_CAP2_IN));
         hall_sensor_value = (gpio_get_level(GPIO_CAP2_IN) * 1) + (gpio_get_level(GPIO_CAP1_IN) * 2) + (gpio_get_level(GPIO_CAP0_IN) * 4);
         if(gpio_get_level(GPIO_BREAK) == 1){
-            printf("hall_sen_val: %d\n", hall_sensor_value);
+            printf("hall_sen_val\t: %d\n", hall_sensor_value);
             mcpwm_config_t pwm_config;
             pwm_config.frequency = 1000;    //frequency = 1000Hz
             duty_cycle = (adc_reading_Throttle-950.0)/31.45;
@@ -309,12 +317,12 @@ static void mcpwm_example_bldc_control(void *arg)
             }else{
                 duty_cycle = (adc_reading_Throttle-950)/31.45;
             }
-            printf("duty_cycle: %f\n", duty_cycle);
+            printf("duty_cycle\t: %f\n", duty_cycle);
             pwm_config.cmpr_a = duty_cycle;
             pwm_config.cmpr_b = 0;    
             pwm_config.counter_mode = MCPWM_UP_COUNTER;
             if (hall_sensor_value == 2) {
-                printf("Condicion: %d\n", hall_sensor_value);
+                printf("Condicion\t: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_B);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A);
@@ -327,7 +335,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
             if (hall_sensor_value == 6) {
-                printf("Condicion: %d\n", hall_sensor_value);
+                printf("Condicion\t: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B);
                 mcpwm_deadtime_disable(MCPWM_UNIT_0, MCPWM_TIMER_0);
@@ -340,7 +348,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
             if (hall_sensor_value == 4) {
-                printf("Condicion: %d\n", hall_sensor_value);
+                printf("Condicion\t: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A);
@@ -352,7 +360,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
             }
             if (hall_sensor_value == 5) {
-                printf("Condicion: %d\n", hall_sensor_value);
+                printf("Condicion\t: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_B);
                 mcpwm_deadtime_disable(MCPWM_UNIT_0, MCPWM_TIMER_2);
@@ -365,7 +373,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10uss
             }
             if (hall_sensor_value == 1) {
-                printf("Condicion: %d\n", hall_sensor_value);
+                printf("Condicion\t: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_2, MCPWM_OPR_A);
@@ -377,7 +385,7 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10uss
             }
             if (hall_sensor_value == 3) {
-                printf("Condicion: %d\n", hall_sensor_value);
+                printf("Condicion\t: %d\n", hall_sensor_value);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A);
                 mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B);
                 mcpwm_deadtime_disable(MCPWM_UNIT_0, MCPWM_TIMER_1);
@@ -388,15 +396,18 @@ static void mcpwm_example_bldc_control(void *arg)
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0); //Set PWM0A to duty mode one
                 mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, MCPWM_DUTY_MODE_0); //Set PWM0B back to duty mode zero
                 mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
-            }if(hall_sensor_value != 0){
+            }
+            if(hall_sensor_value > 0 && hall_sensor_value < 7){
+                fprintf(stdout,"\33[2K\033[8A");
+            }
+            else{
                 fprintf(stdout,"\33[2K\033[7A");
-            }else{
-                fprintf(stdout,"\33[2K\033[6A");
             }
             hall_sensor_previous = hall_sensor_value;
-        }else{
+        }
+        else{
             printf("FRENADO!\n");
-            fprintf(stdout,"\33[2K\033[5A");
+            fprintf(stdout,"\33[2K\033[6A");
             mcpwm_config_t pwm_config;
             pwm_config.frequency = 1000;    //frequency = 1000Hz
             pwm_config.cmpr_a = 0.0;    //duty cycle of PWMxA = 50.0%
