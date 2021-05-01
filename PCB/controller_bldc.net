@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source C:\Users\david\espProjects\Electeam-Sharky-ESP32\PCB\controller_bldc.sch)
-    (date "30/04/2021 4:45:06 p. m.")
+    (date "1/05/2021 10:11:21 a. m.")
     (tool "Eeschema (5.1.9)-1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
