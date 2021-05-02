@@ -1,5 +1,0 @@
-(page_layout
-  (setup (textsize 1.5 1.5)(linewidth 0.15)(textlinewidth 0.15)
-  (left_margin 10)(right_margin 10)(top_margin 10)(bottom_margin 10))
-  (line (name segm1:Line) (start -9.999799999999993 -9.499800000000022) (end -9.997599999999977 -8.992600000000039))
-)
