@@ -1,3 +1,4 @@
 FIRMWARE/build/*
 NextionTest/build/*
+*.vscode
 TODO-David.txt
