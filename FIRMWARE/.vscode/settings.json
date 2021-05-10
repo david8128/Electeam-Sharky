@@ -3,6 +3,8 @@
   "idf.portWin": "COM7",
   "idf.flashType": "UART",
   "files.associations": {
-    "esp_adc_cal.h": "c"
+    "esp_adc_cal.h": "c",
+    "stdio.h": "c",
+    "stdlib.h": "c"
   }
 }
