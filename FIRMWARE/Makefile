@@ -6,4 +6,3 @@
 PROJECT_NAME := sharky
 
 include $(IDF_PATH)/make/project.mk
-

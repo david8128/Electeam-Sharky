@@ -1,10 +1,12 @@
 {
   "C_Cpp.intelliSenseEngine": "Tag Parser",
-  "idf.portWin": "COM7",
   "idf.flashType": "UART",
+  "idf.portWin": "COM7",
   "files.associations": {
-    "esp_adc_cal.h": "c",
-    "stdio.h": "c",
-    "stdlib.h": "c"
+    "string.h": "c",
+    "*.tcc": "c",
+    "*.ipp": "c",
+    "hardwareserial.h": "c",
+    "random": "c"
   }
 }

@@ -20,10 +20,13 @@
 */
 
 // ~|* Include Section *|~
-#pragma region ~|* Includes Section *|~
+#ifndef __GNUC__
+#pragma region Includes_Section
+#endif
     // Include FreeRTOS general purpose
     #include "freertos/FreeRTOS.h"
     #include "freertos/task.h"
+    #include <math.h>
 
     // Include for MCPWM
     #include <stdio.h>
@@ -45,42 +48,50 @@
     #include "esp_log.h"
     #include "driver/uart.h"
     #include "soc/uart_struct.h"
-#pragma endregion
+#ifndef __GNUC__
+#pragma endregion Includes_Section
+#endif
 
 // ~|* Define Section *|~
-#pragma region ~|* Defines Section *|~
-
+#ifndef __GNUC__
+#pragma region Defines_Section
+#endif
     // Define for ADC
     #define DEFAULT_VREF    1100        //Use adc2_vref_to_gpio() to obtain a better estimate
     #define NO_OF_SAMPLES   64          //Multisampling
 
     static esp_adc_cal_characteristics_t *adc_chars;
     #if CONFIG_IDF_TARGET_ESP32
-    static const adc_channel_t channel = ADC_CHANNEL_6;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
-    static const adc_channel_t channel2 = ADC_CHANNEL_7;     //CURRENT SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
-    static const adc_channel_t channel3 = ADC_CHANNEL_4;     //TEMPERATURE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
-    static const adc_channel_t channel4 = ADC_CHANNEL_5;     //VOLTAGE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+    static const adc_channel_t channel_Throttle = ADC_CHANNEL_6;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
+    static const adc_channel_t channel_Current = ADC_CHANNEL_7;     //CURRENT SENSOR - GPIO35 if ADC1, GPIO27 if ADC2
+    static const adc_channel_t channel_Temperature = ADC_CHANNEL_4;     //TEMPERATURE SENSOR - GPIO32 if ADC1, GPIO27 if ADC2
+    static const adc_channel_t channel_Voltage = ADC_CHANNEL_5;     //VOLTAGE SENSOR - GPIO33 if ADC1, GPIO27 if ADC2
     static const adc_bits_width_t width = ADC_WIDTH_BIT_12;
     #elif CONFIG_IDF_TARGET_ESP32S2
-    static const adc_channel_t channel = ADC_CHANNEL_6;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
-    static const adc_channel_t channel2 = ADC_CHANNEL_7;     //CURRENT SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
-    static const adc_channel_t channel3 = ADC_CHANNEL_4;     //TEMPERATURE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
-    static const adc_channel_t channel4 = ADC_CHANNEL_5;     //VOLTAGE SENSOR - GPIO35 if ADC2, GPIO27 if ADC2
+    static const adc_channel_t channel_Throttle = ADC_CHANNEL_6;     //THROTTLE - GPIO34 if ADC1, GPIO14 if ADC2
+    static const adc_channel_t channel_Current = ADC_CHANNEL_7;     //CURRENT SENSOR - GPIO35 if ADC1, GPIO27 if ADC2
+    static const adc_channel_t channel_Temperature = ADC_CHANNEL_4;     //TEMPERATURE SENSOR - GPIO32 if ADC1, GPIO27 if ADC2
+    static const adc_channel_t channel_Voltage = ADC_CHANNEL_5;     //VOLTAGE SENSOR - GPIO33 if ADC1, GPIO27 if ADC2
     static const adc_bits_width_t width = ADC_WIDTH_BIT_13;
     #endif
     static const adc_atten_t atten = ADC_ATTEN_DB_11;
     static const adc_unit_t unit = ADC_UNIT_1;
 
-    xQueueHandle cap_queue2;
-    xQueueHandle cap_queue3;
-    xQueueHandle cap_queue4;
-    xQueueHandle cap_queue5;
+    xQueueHandle cap_queue_Throttle;
+    xQueueHandle cap_queue_Current;
+    xQueueHandle cap_queue_Temperature;
+    xQueueHandle cap_queue_Voltage;
+    xQueueHandle cap_queue_Real_Temperature;
 
     // Define for UART - NEXTION
     static const int RX_BUF_SIZE = (1024*2);
     static const char *TX_TASK_TAG = "TX_TASK";
     static const char *RX_TASK_TAG = "RX_TASK";
     static const char *ESP_SOFT_RESET = "espreset";
+
+    static const int temperature = 5;
+    // static const int humidity = 6;
+    static const int pressure = 7;
 
     #define TXD_PIN 17
     #define RXD_PIN 16
@@ -113,7 +124,7 @@
     #define GPIO_CAP1_IN   26   //Set GPIO 25 as  CAP1
     #define GPIO_CAP2_IN   27   //Set GPIO 26 as  CAP2
 
-    #define GPIO_BREAK  19   //Set GPIO 26 as  CAP2
+    #define GPIO_BREAK  22   //Set GPIO 26 as  CAP2
 
 
     typedef struct {
@@ -125,11 +136,14 @@
     static uint32_t hall_sensor_previous = 0;
     xQueueHandle cap_queue;
     static mcpwm_dev_t *MCPWM[2] = {&MCPWM0, &MCPWM1};
-#pragma endregion
+#ifndef __GNUC__
+#pragma endregion Defines_Section
+#endif
 
 // ~|* Functions Section *|~
-#pragma region ~|* Functions Section *|~
-
+#ifndef __GNUC__
+#pragma region Functions_Section
+#endif
     // Functions MCPWM
     static void mcpwm_example_gpio_initialize(void)
     {
@@ -304,40 +318,42 @@
         mcpwm_isr_register(MCPWM_UNIT_0, isr_handler, NULL, ESP_INTR_FLAG_IRAM, NULL);  //Set ISR Handler
         
         //According to the hall sensor input value take action on PWM0A/0B/1A/1B/2A/2B
-        uint32_t adc_reading_Throttle = 0;
-        uint32_t adc_reading_Current = 0;
-        uint32_t adc_reading_Temperature = 0;
-        uint32_t adc_reading_Voltage = 0;
+        float adc_3_3_reading_Throttle = 0;
+        float adc_3_3_reading_Current = 0;
+        float adc_3_3_reading_Temperature = 0;
+        float adc_3_3_reading_Voltage = 0;
         float duty_cycle = 0.0;
         float vReading_Throttle = 0.0;
         float vReading_Current = 0.0;
         float vReading_Temperature = 0.0;
         float vReading_Voltage = 0.0;
         while (1) {
-            xQueueReceive(cap_queue2, &adc_reading_Throttle, portMAX_DELAY);
-            xQueueReceive(cap_queue3, &adc_reading_Current, portMAX_DELAY);
-            xQueueReceive(cap_queue4, &adc_reading_Temperature, portMAX_DELAY);
-            xQueueReceive(cap_queue5, &adc_reading_Voltage, portMAX_DELAY);
-            vReading_Throttle = (adc_reading_Throttle*3.3/4095);
-            vReading_Current = (adc_reading_Current*3.3/4095);
-            vReading_Temperature = ((adc_reading_Temperature*3.3/4095)+0.1)*19.4;
-            vReading_Voltage = (adc_reading_Voltage*3.3/4095);
+            xQueueReceive(cap_queue_Throttle, &adc_3_3_reading_Throttle, portMAX_DELAY);
+            xQueueReceive(cap_queue_Current, &adc_3_3_reading_Current, portMAX_DELAY);
+            xQueueReceive(cap_queue_Temperature, &adc_3_3_reading_Temperature, portMAX_DELAY);
+            xQueueReceive(cap_queue_Voltage, &adc_3_3_reading_Voltage, portMAX_DELAY);
+            vReading_Throttle = adc_3_3_reading_Throttle;
+            vReading_Current = adc_3_3_reading_Current;
+            vReading_Temperature = (adc_3_3_reading_Temperature+0.09)*18.24;
+            vReading_Voltage = (adc_3_3_reading_Voltage+0.104)*14.8294;
+            xQueueSend(cap_queue_Real_Temperature, &vReading_Temperature, portMAX_DELAY);
+            printf("Throttle [V]\t: %f\n", vReading_Throttle);
             printf("Current [V]\t: %f\n", vReading_Current);
-            // TODO Adjust the 0.07V difference with the voltmeter
-            printf("Thorttle [V]\t: %f\n", vReading_Throttle);
-            printf("Temperature [V]\t: %f\n", vReading_Temperature);
-            printf("Voltage [V]\t: %f\n", vReading_Voltage);
+            printf("Temperature [V]\t: %f\n", adc_3_3_reading_Temperature);
+            printf("Temperature [C]\t: %f\n", vReading_Temperature);
+            printf("ADC Voltage [V]\t: %f\n", adc_3_3_reading_Voltage);
+            printf("Bat Voltage [V]\t: %f\n", vReading_Voltage);
             printf("Hall Sensors\t: %d %d %d\n",gpio_get_level(GPIO_CAP0_IN),gpio_get_level(GPIO_CAP1_IN),gpio_get_level(GPIO_CAP2_IN));
             hall_sensor_value = (gpio_get_level(GPIO_CAP2_IN) * 1) + (gpio_get_level(GPIO_CAP1_IN) * 2) + (gpio_get_level(GPIO_CAP0_IN) * 4);
             if(gpio_get_level(GPIO_BREAK) == 1){
                 printf("hall_sen_val\t: %d\n", hall_sensor_value);
                 mcpwm_config_t pwm_config;
                 pwm_config.frequency = 1000;    //frequency = 1000Hz
-                duty_cycle = (adc_reading_Throttle-950.0)/31.45;
+                duty_cycle = (adc_3_3_reading_Throttle-950.0)/31.45;
                 if( duty_cycle < 0.0 ){
                     duty_cycle = 0.0;    
                 }else{
-                    duty_cycle = (adc_reading_Throttle-950)/31.45;
+                    duty_cycle = (adc_3_3_reading_Throttle-950)/31.45;
                 }
                 printf("duty_cycle\t: %f\n", duty_cycle);
                 pwm_config.cmpr_a = duty_cycle;
@@ -420,10 +436,10 @@
                     mcpwm_deadtime_enable(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_BYPASS_FED, 100, 100);   //Deadtime of 10us
                 }
                 if(hall_sensor_value > 0 && hall_sensor_value < 7){
-                    fprintf(stdout,"\33[2K\033[8A");
+                    fprintf(stdout,"\33[2K\033[10A");
                 }
                 else{
-                    fprintf(stdout,"\33[2K\033[7A");
+                    fprintf(stdout,"\33[2K\033[9A");
                 }
                 hall_sensor_previous = hall_sensor_value;
             }
@@ -445,6 +461,97 @@
         }
     }
     
+    // Functions for NEXTION - UART
+    void initNextion() {
+
+        // Setup of UART 1
+        const uart_config_t uart_config = {
+            .baud_rate = 115200,
+            .data_bits = UART_DATA_8_BITS,
+            .parity = UART_PARITY_DISABLE,
+            .stop_bits = UART_STOP_BITS_1,
+            .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
+        };
+        uart_param_config(nUART, &uart_config);
+        uart_set_pin(nUART, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+        // We won't use a buffer for sending data.
+        uart_driver_install(nUART, RX_BUF_SIZE * 2, 0, 0, NULL, 0);
+    }
+
+    int sendData(const char* logName, const char* data)
+    {
+        const int len = strlen(data);
+        const int txBytes = uart_write_bytes(nUART, (const char*) data, len);
+        // ESP_LOGI(logName, "Wrote '%s' of %d bytes",data, txBytes);
+        return txBytes;
+    }
+
+    static void tx_task()
+    {
+        esp_log_level_set(TX_TASK_TAG, ESP_LOG_INFO);
+        while (1) {
+            // OK so here is where you can play around and change values or add text and/or numeric fields to the Nextion and update them
+            // sendData(TX_TASK_TAG, "\x55");		//example text value - Outside temp
+            float vReading_Temperature = 0.0;
+            xQueueReceive(cap_queue_Real_Temperature, &vReading_Temperature, portMAX_DELAY);
+            
+            char charvalue_humidity[100];
+            char charvalue_temperature[2];
+            char charvalue_pressure[2];
+            // Here is sign if needed
+            // char *tmpSign = (adc_read < 0) ? "-" : "";
+            // sprintf (charvalue_humidity, "%s%0.2f", tmpSign, adc_read);
+            sprintf (charvalue_humidity, "%0.2f", vReading_Temperature);
+            sprintf(charvalue_temperature, "%d", temperature);
+            sprintf(charvalue_pressure, "%d", pressure);
+            
+            char humidity_chars[30];
+            char temperature_chars[30];
+            char pressure_chars[30];
+            
+            strcpy(humidity_chars, "humidity.txt=\"");
+            strcat(humidity_chars, (const char*)charvalue_humidity);
+            strcat(humidity_chars, "\"\xff\xff\xff");
+            strcpy(temperature_chars, "temperature.txt=\"");
+            strcat(temperature_chars, (const char*)charvalue_temperature);
+            strcat(temperature_chars, "\"\xff\xff\xff");
+            strcpy(pressure_chars, "pressure.txt=\"");
+            strcat(pressure_chars, (const char*)charvalue_pressure);
+            strcat(pressure_chars, "\"\xff\xff\xff");
+
+            sendData(TX_TASK_TAG, humidity_chars);		//example text value - Outside temp
+            sendData(TX_TASK_TAG, temperature_chars);		//example text value - Outside temp
+            sendData(TX_TASK_TAG, pressure_chars);		//example text value - Outside temp
+            // vTaskDelay(100 / portTICK_PERIOD_MS); //Transmit every 10 seconds
+            vTaskDelay(pdMS_TO_TICKS(10));
+        }
+    }
+
+    static void rx_task()
+    {
+        esp_log_level_set(RX_TASK_TAG, ESP_LOG_INFO);
+        uint8_t* data = (uint8_t*) malloc(RX_BUF_SIZE+1);
+        char *dstream = malloc(RX_BUF_SIZE+1);
+        while (1) {
+            const int rxBytes = uart_read_bytes(nUART, data, RX_BUF_SIZE, 1000 / portTICK_RATE_MS);
+            if (rxBytes > 0) {
+                data[rxBytes] = 0;
+                ESP_LOGI(RX_TASK_TAG, "Read %d bytes: '%s'", rxBytes, data);
+                ESP_LOG_BUFFER_HEXDUMP(RX_TASK_TAG, data, rxBytes, ESP_LOG_INFO);
+                //
+                // if it sees the incoming 'espreset' text then reboot the ESP32.
+                snprintf(dstream, RX_BUF_SIZE+1, "%s", data);
+                char *ismatch = strstr(dstream, ESP_SOFT_RESET);
+                if (ismatch) {
+                    //esp_restart() is an esp-idf function---check for deprecation
+                    esp_restart();
+                }
+            }
+        }
+        free(data);
+        free(dstream);
+    }
+
     
     // Functions for ADC
     static void check_efuse(void)
@@ -495,15 +602,15 @@
         //Configure ADC
         if (unit == ADC_UNIT_1) {
             adc1_config_width(width);
-            adc1_config_channel_atten(channel, atten);
-            adc1_config_channel_atten(channel2, atten);
-            adc1_config_channel_atten(channel3, atten);
-            adc1_config_channel_atten(channel4, atten);
+            adc1_config_channel_atten(channel_Throttle, atten);
+            adc1_config_channel_atten(channel_Current, atten);
+            adc1_config_channel_atten(channel_Temperature, atten);
+            adc1_config_channel_atten(channel_Voltage, atten);
         } else {
-            adc2_config_channel_atten((adc2_channel_t)channel, atten);
-            adc2_config_channel_atten((adc2_channel_t)channel2, atten);
-            adc2_config_channel_atten((adc2_channel_t)channel3, atten);
-            adc2_config_channel_atten((adc2_channel_t)channel4, atten);
+            adc2_config_channel_atten((adc2_channel_t)channel_Throttle, atten);
+            adc2_config_channel_atten((adc2_channel_t)channel_Current, atten);
+            adc2_config_channel_atten((adc2_channel_t)channel_Temperature, atten);
+            adc2_config_channel_atten((adc2_channel_t)channel_Voltage, atten);
         }
 
         //Characterize ADC
@@ -513,112 +620,55 @@
 
         //Continuously sample ADC1
         while (1) {
-            uint32_t adc_reading = 0;
-            uint32_t adc_reading2 = 0;
-            uint32_t adc_reading3 = 0;
-            uint32_t adc_reading4 = 0;
+            uint32_t adc_reading_Throttle = 0;
+            uint32_t adc_reading_Current = 0;
+            uint32_t adc_reading_Temperature = 0;
+            uint32_t adc_reading_Voltage = 0;
+            float vReading_Throttle = 0.0;
+            float vReading_Current = 0.0;
+            float vReading_Temperature = 0.0;
+            float vReading_Voltage = 0.0;
             //Multisampling
             for (int i = 0; i < NO_OF_SAMPLES; i++) {
                 if (unit == ADC_UNIT_1) {
-                    adc_reading += adc1_get_raw((adc1_channel_t)channel);
-                    adc_reading2 += adc1_get_raw((adc1_channel_t)channel2);
-                    adc_reading3 += adc1_get_raw((adc1_channel_t)channel3);
-                    adc_reading4 += adc1_get_raw((adc1_channel_t)channel4);
+                    adc_reading_Throttle += adc1_get_raw((adc1_channel_t)channel_Throttle);
+                    adc_reading_Current += adc1_get_raw((adc1_channel_t)channel_Current);
+                    adc_reading_Temperature += adc1_get_raw((adc1_channel_t)channel_Temperature);
+                    adc_reading_Voltage += adc1_get_raw((adc1_channel_t)channel_Voltage);
                 } else {
-                    int raw;
-                    int raw2;
-                    int raw3;
-                    int raw4;
-                    adc2_get_raw((adc2_channel_t)channel, width, &raw);
-                    adc2_get_raw((adc2_channel_t)channel2, width, &raw2);
-                    adc2_get_raw((adc2_channel_t)channel2, width, &raw3);
-                    adc2_get_raw((adc2_channel_t)channel2, width, &raw4);
-                    adc_reading += raw;
-                    adc_reading2 += raw2;
-                    adc_reading3 += raw3;
-                    adc_reading4 += raw4;
+                    int raw_Throttle;
+                    int raw_Current;
+                    int raw_Temperature;
+                    int raw_Voltage;
+                    adc2_get_raw((adc2_channel_t)channel_Throttle, width, &raw_Throttle);
+                    adc2_get_raw((adc2_channel_t)channel_Current, width, &raw_Current);
+                    adc2_get_raw((adc2_channel_t)channel_Temperature, width, &raw_Temperature);
+                    adc2_get_raw((adc2_channel_t)channel_Voltage, width, &raw_Voltage);
+                    adc_reading_Throttle += raw_Throttle;
+                    adc_reading_Current += raw_Current;
+                    adc_reading_Temperature += raw_Temperature;
+                    adc_reading_Voltage += raw_Voltage;
                 }
             }
-            adc_reading /= NO_OF_SAMPLES;
-            adc_reading2 /= NO_OF_SAMPLES;
-            adc_reading3 /= NO_OF_SAMPLES;
-            adc_reading4 /= NO_OF_SAMPLES;
+            adc_reading_Throttle /= NO_OF_SAMPLES;
+            adc_reading_Current /= NO_OF_SAMPLES;
+            adc_reading_Temperature /= NO_OF_SAMPLES;
+            adc_reading_Voltage /= NO_OF_SAMPLES;
+            vReading_Throttle = (adc_reading_Throttle*3.3/4095);
+            vReading_Current = (adc_reading_Current*3.3/4095);
+            vReading_Temperature = (adc_reading_Temperature*3.3/4095);
+            vReading_Voltage = (adc_reading_Voltage*3.3/4095);
             //Convert adc_reading to voltage in mV
             // uint32_t voltage = esp_adc_cal_raw_to_voltage(adc_reading, adc_chars);
             // printf("Raw: %d\tVoltage: %dmV\n", adc_reading, voltage);
-            xQueueSend(cap_queue2, &adc_reading, portMAX_DELAY);
-            xQueueSend(cap_queue3, &adc_reading2, portMAX_DELAY);
-            xQueueSend(cap_queue4, &adc_reading3, portMAX_DELAY);
-            xQueueSend(cap_queue5, &adc_reading4, portMAX_DELAY);
+            xQueueSend(cap_queue_Throttle, &vReading_Throttle, portMAX_DELAY);
+            xQueueSend(cap_queue_Current, &vReading_Current, portMAX_DELAY);
+            xQueueSend(cap_queue_Temperature, &vReading_Temperature, portMAX_DELAY);
+            xQueueSend(cap_queue_Voltage, &vReading_Voltage, portMAX_DELAY);
             vTaskDelay(pdMS_TO_TICKS(10));
         }
     }
 
-
-    // Functions for NEXTION - UART
-    void initNextion() {
-
-        // Setup of UART 1
-        const uart_config_t uart_config = {
-            .baud_rate = 115200,
-            .data_bits = UART_DATA_8_BITS,
-            .parity = UART_PARITY_DISABLE,
-            .stop_bits = UART_STOP_BITS_1,
-            .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
-        };
-        uart_param_config(nUART, &uart_config);
-        uart_set_pin(nUART, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-        // We won't use a buffer for sending data.
-        uart_driver_install(nUART, RX_BUF_SIZE * 2, 0, 0, NULL, 0);
-    }
-
-    int sendData(const char* logName, const char* data)
-    {
-        const int len = strlen(data);
-        const int txBytes = uart_write_bytes(nUART, (const char*) data, len);
-        ESP_LOGI(logName, "Wrote '%s' of %d bytes",data, txBytes);
-        return txBytes;
-    }
-
-    static void tx_task()
-    {
-        esp_log_level_set(TX_TASK_TAG, ESP_LOG_INFO);
-        while (1) {
-            
-            // ISSUE Change Nextion code and adjust it to Sharky
-            // OK so here is where you can play around and change values or add text and/or numeric fields to the Nextion and update them
-            // sendData(TX_TASK_TAG, "\x55");		//example text value - Outside temp
-            sendData(TX_TASK_TAG, "humidity.txt=\"5\"\xff\xff\xff");		//example text value - Outside temp
-            sendData(TX_TASK_TAG, "temperature.txt=\"6\"\xff\xff\xff");		//example text value - Outside temp
-            sendData(TX_TASK_TAG, "pressure.txt=\"7\"\xff\xff\xff");		//example text value - Outside temp
-            vTaskDelay(100 / portTICK_PERIOD_MS); //Transmit every 10 seconds
-        }
-    }
-
-    static void rx_task()
-    {
-        esp_log_level_set(RX_TASK_TAG, ESP_LOG_INFO);
-        uint8_t* data = (uint8_t*) malloc(RX_BUF_SIZE+1);
-        char *dstream = malloc(RX_BUF_SIZE+1);
-        while (1) {
-            const int rxBytes = uart_read_bytes(nUART, data, RX_BUF_SIZE, 1000 / portTICK_RATE_MS);
-            if (rxBytes > 0) {
-                data[rxBytes] = 0;
-                ESP_LOGI(RX_TASK_TAG, "Read %d bytes: '%s'", rxBytes, data);
-                ESP_LOG_BUFFER_HEXDUMP(RX_TASK_TAG, data, rxBytes, ESP_LOG_INFO);
-                //
-                // if it sees the incoming 'espreset' text then reboot the ESP32.
-                snprintf(dstream, RX_BUF_SIZE+1, "%s", data);
-                char *ismatch = strstr(dstream, ESP_SOFT_RESET);
-                if (ismatch) {
-                    //esp_restart() is an esp-idf function---check for deprecation
-                    esp_restart();
-                }
-            }
-        }
-        free(data);
-        free(dstream);
-    }
 
     // General Functions
     void app_main(void)
@@ -629,15 +679,18 @@
         xTaskCreate(change_duty, "change_duty", 2048, NULL, 2, NULL);
     #endif
     cap_queue = xQueueCreate(1, sizeof(capture)); //comment if you don't want to use capture module
-    cap_queue2 = xQueueCreate(1, sizeof(uint32_t)); //comment if you don't want to use capture module
-    cap_queue3 = xQueueCreate(1, sizeof(uint32_t)); //comment if you don't want to use capture module
-    cap_queue4 = xQueueCreate(1, sizeof(uint32_t)); //comment if you don't want to use capture module
-    cap_queue5 = xQueueCreate(1, sizeof(uint32_t)); //comment if you don't want to use capture module
+    cap_queue_Throttle = xQueueCreate(1, sizeof(float)); //comment if you don't want to use capture module
+    cap_queue_Current = xQueueCreate(1, sizeof(float)); //comment if you don't want to use capture module
+    cap_queue_Temperature = xQueueCreate(1, sizeof(float)); //comment if you don't want to use capture module
+    cap_queue_Voltage = xQueueCreate(1, sizeof(float)); //comment if you don't want to use capture module
+    cap_queue_Real_Temperature = xQueueCreate(1, sizeof(float)); //comment if you don't want to use capture module
     #if GPIO_HALL_TEST_SIGNAL
         xTaskCreate(gpio_test_signal, "gpio_test_signal", 2048, NULL, 2, NULL);
     #endif
-    if(cap_queue == NULL || cap_queue2 == NULL || cap_queue3 == NULL || cap_queue4 == NULL || cap_queue5 == NULL){
-        printf("Error creating the cap_queue or cap_queue2 or cap_queue3");
+    if(cap_queue == NULL || cap_queue_Throttle == NULL 
+        || cap_queue_Current == NULL || cap_queue_Temperature == NULL 
+        || cap_queue_Voltage == NULL || cap_queue_Real_Temperature == NULL){
+        printf("Error creating the cap_queue or cap_queue_Throttle or cap_queue_Current or cap_queue_Real_Temperature");
     }
     
     printf("Init Nextion...\n");
@@ -650,4 +703,6 @@
     xTaskCreate(tx_task, "uart_tx_task", 1024*2, NULL, configMAX_PRIORITIES-1, NULL);
     }
 
-#pragma endregion
+#ifndef __GNUC__
+#pragma endregion Functions_Section
+#endif
