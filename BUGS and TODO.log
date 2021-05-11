@@ -1,0 +1,39 @@
+[General Tasks]:
+    TODO Read the rules for the local marathon
+    ISSUE [In progress] Do the schematic for the control > README.md #23
+    ISSUE [In progress] Determine the modes according to the rules of the Shell Echo Marathon Competition #20
+    
+    ISSUE OPC Design
+    ISSUE Desing 3D Printed plastic tray for the battery
+    ISSUE Max speed - current with osciloscope > README.md
+    ISSUE Meassure max current limited by the BMS
+    ISSUE Correlation between Acceleration and Duty Cycle > README.md
+    ISSUE Test all systems and finish README documentation #29
+
+[Firmware]:
+    TODO - Check current sensor with motor.
+    TODO - tener en cuenta la tabla de porcentaje y voltaje de la batería
+    TODO - Calculate porcentage battery sensor with motor.
+
+    TODO - Calculate and display speed.
+    TODO - Calculate and display distance traveled.
+    TODO - Create a timer counter and display it.
+    TODO - Mult. voltage per current and display power.
+    ISSUE [In progress] Change Nextion code and adjust it to Sharky #26
+
+    ISSUE [In progress] Create the software to implement the Torque/Current Control
+
+    [x] Verify code for Nextion in C #25 
+    [x] Send from ESP32 and recieve in the Nextion Screen #27 
+    [x] TODO - Display all 4 values, DC, Curr, Temp, Voltage
+    [x] TODO - Change the tft file in NX
+
+    [x] Adjusted priorities in xTaskCreate inside app_main.  The microcontroller resets when having motor cables unpluged and motor is moved to check Hall Sensor Value:     ***ERROR*** A stack overflow in task mcpwm_example_b has been detected. (SW_CPU_RESET) ELF file SHA256: df0f48ddacae0c35
+
+[PCB]:
+    ISSUE Fix supply voltage for the Amp. Op.
+    ISSUE Test all systems and finish README documentation
+    ISSUE Buy magnets for OPC
+    ISSUE OPC Connection
+[Others]:
+    COMPLETE (BUG) Voltage drops from 20V to 4V drawing 800mA

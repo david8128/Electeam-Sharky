@@ -1,5 +1,10 @@
 # Electeam-Sharky-ESP32
+
+
 This is the firmware for the ESP32-WROOM-32 microcontroller where throttle, break, LCD screen, motor and more systems are integrated.
+
+
+
 ![Schematic](https://drive.google.com/uc?export=view&id=18NEBAM3f7z6DvfUNkW7gQg9mj4XFdRmA) 
 <!-- TODO Update schematic here -->
 > The PCB Kicad folder is located in (controller_bldc_kicad_Sch_PCB/)[https://github.com/david8128/Electeam-Sharky-ESP32/tree/main/controller_bldc_kicad_Sch_PCB]
@@ -7,7 +12,7 @@ This is the firmware for the ESP32-WROOM-32 microcontroller where throttle, brea
 <!-- Note the reference of nextion in README, 70mA -->
 <!-- TODO Document the current and voltage in Current Sensor -->
 
-<!-- TODO Add the MCU and SMPS notes in README-->
+<!-- TODO Add the MCU and SMPS specs in README-->
 #### Power 
 Relay for the Operator Presence Control - aka. Death Man Security System (HAT901 12VDC 20A) = 0.96 W
 >MOSFET has been considered for de OPC but the consumtion is higher (Using IRF1010N with a )
