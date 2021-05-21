@@ -14,9 +14,9 @@
  */
 
 /*  Registro de Fallas
-    
+
  *  Error en acelerador, voltaje de salida del acelerador sin oprimir: 3.2V
- *  Voltaje de regulación en la segunda fuente de 18V -> Concetar resistencia de consumo en la salida de 100 ohms 
+ *  Voltaje de regulación en la segunda fuente de 18V -> Concetar resistencia de consumo en la salida de 100 ohms
 */
 
 // ~|* Include Section *|~
@@ -76,6 +76,7 @@ xQueueHandle cap_queue_Temperature;
 xQueueHandle cap_queue_Voltage;
 xQueueHandle cap_queue_Real_Temperature;
 xQueueHandle cap_queue_DutyCycle;
+xQueueHandle cap_queue_Real_BattPorcentage;
 xQueueHandle cap_queue_Real_BattVolts;
 xQueueHandle cap_queue_Real_Current;
 
@@ -327,7 +328,7 @@ static void mcpwm_example_bldc_control(void *arg)
     float time_crono = 0.0;
     float power = 0.0;
     float duty_cycle = 0.0;
-
+    int contador_tics = 0;
     while (1)
     {
         // Read Hall Sensors
@@ -340,11 +341,25 @@ static void mcpwm_example_bldc_control(void *arg)
         xQueueReceive(cap_queue_Throttle, &duty_cycle, portMAX_DELAY);
 
         // Calculations
-        battery_voltage = (vReading_Voltage + 0.104) * 14.8294;
+        float x_v = vReading_Voltage;
+        float add_volt_mult = -0.03496*x_v + 0.13;
+        float y_v = (vReading_Voltage+add_volt_mult);
+        float mult_volts_final = 0.2409*pow(y_v,2) - 1.067*y_v + 15.95;
+        battery_voltage = (vReading_Voltage+add_volt_mult)*mult_volts_final;
+        float x_b = battery_voltage;
+        battery_charge = -0.0009234437677319396*pow(x_b,8) + 0.2726640151590356*pow(x_b,7) - 35.17179794706443*pow(x_b,6) + 2588.7822591511595*pow(x_b,5) - 118918.82535921388*pow(x_b,4) + 3491102.021002437*pow(x_b,3) - 63963904.907912984*pow(x_b,2) + 668735305.3250092*x_b -3054510821.0436487;
+
         temperature = (vReading_Temperature + 0.09) * 18.24;
-        current = vReading_Current;
+
+        float x_c = vReading_Current;
+        float add_curr_mult = 0.0016*pow(x_c,9) - 0.03199*pow(x_c,8) + 0.2708*pow(x_c,7) - 1.261*pow(x_c,6) + 3.507*pow(x_c,5) - 5.905*pow(x_c,4) + 5.795*pow(x_c,3) - 2.97*pow(x_c,2) + 0.6309*x_c + 0.043;
+        float y_c = (vReading_Current+add_curr_mult);
+        float mult_current_final = -0.9147*pow(y_c,9) + 17.04*pow(y_c,8) - 134.2*pow(y_c,7) + 580.2*pow(y_c,6) - 1501*pow(y_c,5) + 2372*pow(y_c,4) - 2235*pow(y_c,3) + 1173*pow(y_c,2) - 298*y_c + 40.03;
+        current = (vReading_Current+add_curr_mult)*mult_current_final;
+
 
         // Send to UART -> NEXTION
+        xQueueSend(cap_queue_Real_BattPorcentage, &battery_charge, portMAX_DELAY);
         xQueueSend(cap_queue_Real_BattVolts, &battery_voltage, portMAX_DELAY);
         xQueueSend(cap_queue_Real_Temperature, &temperature, portMAX_DELAY);
         xQueueSend(cap_queue_Real_Current, &current, portMAX_DELAY);
@@ -356,11 +371,15 @@ static void mcpwm_example_bldc_control(void *arg)
         printf("Temperature [V]\t: %f\n", vReading_Temperature);
         printf("Temperature [C]\t: %f\n", temperature);
         printf("Current [V]\t: %f\n", current);
-        
+        printf("Tics [#]\t: %d\n", contador_tics);
+
         // printf("Throttle [V]\t: %f\n", vReading_Throttle);
         printf("duty_cycle\t: %f\n", duty_cycle);
         printf("Hall Sensors\t: %d %d %d\n", gpio_get_level(GPIO_CAP0_IN), gpio_get_level(GPIO_CAP1_IN), gpio_get_level(GPIO_CAP2_IN));
 
+        if(hall_sensor_previous!=hall_sensor_value){
+            contador_tics++;
+        }
         if (gpio_get_level(GPIO_BREAK) == 1)
         {
             printf("hall_sen_val\t: %d\n", hall_sensor_value);
@@ -523,10 +542,12 @@ int sendData(const char *logName, const char *data)
 static void tx_task()
 {
     esp_log_level_set(TX_TASK_TAG, ESP_LOG_INFO);
+    float avg_battery_charge = 0.0;
     float avg_battery_voltage = 0.0;
     float avg_temperature = 0.0;
     float avg_current = 0.0;
     int counter_iterations = 0;
+    float last_battery_charge = 0.0;
     float last_battery_voltage = 0.0;
     float last_temperature = 0.0;
     float last_current = 0.0;
@@ -534,19 +555,20 @@ static void tx_task()
     {
         // OK so here is where you can play around and change values or add text and/or numeric fields to the Nextion and update them
         // sendData(TX_TASK_TAG, "\x55");		//example text value - Outside temp
-        
+        float battery_charge = 0.0;
         float battery_voltage = 0.0;
         float temperature = 0.0;
         float duty_cycle = 0.0;
         float current = 0.0;
 
+        xQueueReceive(cap_queue_Real_BattPorcentage, &battery_charge, portMAX_DELAY);
         xQueueReceive(cap_queue_Real_BattVolts, &battery_voltage, portMAX_DELAY);
         xQueueReceive(cap_queue_Real_Temperature, &temperature, portMAX_DELAY);
         xQueueReceive(cap_queue_Real_Current, &current, portMAX_DELAY);
         xQueueReceive(cap_queue_DutyCycle, &duty_cycle, portMAX_DELAY);
 
         // Variables that convert numbers to chars
-        // char charvalue_batteryCharge[10];
+        char charvalue_batteryCharge[10];
         char charvalue_battery_voltage[10];
         char charvalue_temperature[10];
         char charvalue_current[10];
@@ -560,7 +582,7 @@ static void tx_task()
         // sprintf (charvalue_batteryCharge, "%s%0.2f", tmpSign, adc_read);
 
         // Variables that contain the text to Nextion
-        // char batteryCharge_chars[30];
+        char batteryCharge_chars[30];
         char battery_voltage_chars[30];
         char temperature_chars[30];
         char current_chars[30];
@@ -570,26 +592,32 @@ static void tx_task()
         // char power_chars[30];
         char throttle_chars[30];
         if(counter_iterations == 0){
+            last_battery_charge = battery_charge;
             last_battery_voltage = battery_voltage;
             last_temperature = temperature;
             last_current = current;
-            
+
+            avg_battery_charge += battery_charge;
             avg_battery_voltage += battery_voltage;
             avg_temperature += temperature;
             avg_current += current;
         }else if(counter_iterations<10){
+            avg_battery_charge += battery_charge;
             avg_battery_voltage += battery_voltage;
             avg_temperature += temperature;
             avg_current += current;
         }else{
+            avg_battery_charge /= (counter_iterations-1);
             avg_battery_voltage /= (counter_iterations-1);
             avg_temperature /= (counter_iterations-1);
             avg_current /= (counter_iterations-1);
 
+            last_battery_charge = avg_battery_charge;
             last_battery_voltage = avg_battery_voltage;
             last_temperature = avg_temperature;
             last_current = avg_current;
 
+            avg_battery_charge = 0.0;
             avg_battery_voltage = 0.0;
             avg_temperature = 0.0;
             avg_current = 0.0;
@@ -597,17 +625,17 @@ static void tx_task()
         }
         counter_iterations++;
 
-        // sprintf (charvalue_batteryCharge, "%0.1f", );
+        sprintf (charvalue_batteryCharge, "%0.1f", last_battery_charge);
         sprintf(charvalue_battery_voltage, "%0.2f", last_battery_voltage);
         sprintf(charvalue_temperature, "%0.1f", last_temperature);
-        sprintf(charvalue_current, "%0.0f", last_current);
+        sprintf(charvalue_current, "%0.3f", last_current);
         // sprintf(charvalue_speed, "%0.0f", );
         // sprintf(charvalue_distance, "%0.0f", );
         // sprintf(charvalue_time, "%0.0f", );
         // sprintf(charvalue_power, "%0.0f", );
         sprintf(charvalue_throttle, "%0.1f", duty_cycle);
 
-        // sprintf (batteryCharge_chars, "bat.txt=\"%s\"\xff\xff\xff", (const char*)charvalue_batteryCharge);
+        sprintf (batteryCharge_chars, "bat.txt=\"%s\"\xff\xff\xff", (const char*)charvalue_batteryCharge);
         sprintf(battery_voltage_chars, "batv.txt=\"%s\"\xff\xff\xff", (const char *)charvalue_battery_voltage);
         sprintf(temperature_chars, "temp.txt=\"%s\"\xff\xff\xff", (const char *)charvalue_temperature);
         sprintf(current_chars, "curr.txt=\"%s\"\xff\xff\xff", (const char *)charvalue_current);
@@ -617,6 +645,7 @@ static void tx_task()
         // sprintf (power_chars, "power.txt=\"%s\"\xff\xff\xff", (const char*)charvalue_power);
         sprintf(throttle_chars, "thro.txt=\"%s\"\xff\xff\xff", (const char *)charvalue_throttle);
 
+        sendData(TX_TASK_TAG, batteryCharge_chars); //Porcentage in battery
         sendData(TX_TASK_TAG, battery_voltage_chars); //Voltage in battery
         sendData(TX_TASK_TAG, temperature_chars);  //Temperature in LM35
         sendData(TX_TASK_TAG, current_chars);      //Supply current for motor
@@ -817,6 +846,7 @@ void app_main(void)
     cap_queue_Voltage = xQueueCreate(1, sizeof(float));          //comment if you don't want to use capture module
     cap_queue_Real_Temperature = xQueueCreate(1, sizeof(float)); //comment if you don't want to use capture module
     cap_queue_DutyCycle = xQueueCreate(1, sizeof(float));        //comment if you don't want to use capture module
+    cap_queue_Real_BattPorcentage = xQueueCreate(1, sizeof(float));   //comment if you don't want to use capture module
     cap_queue_Real_BattVolts = xQueueCreate(1, sizeof(float));   //comment if you don't want to use capture module
     cap_queue_Real_Current = xQueueCreate(1, sizeof(float));     //comment if you don't want to use capture module
 #if GPIO_HALL_TEST_SIGNAL
@@ -826,9 +856,9 @@ void app_main(void)
         cap_queue_Current == NULL || cap_queue_Temperature == NULL ||
         cap_queue_Voltage == NULL || cap_queue_Real_Temperature == NULL ||
         cap_queue_DutyCycle == NULL || cap_queue_Real_BattVolts == NULL ||
-        cap_queue_Real_Current == NULL)
+        cap_queue_Real_Current == NULL || cap_queue_Real_BattPorcentage == NULL)
     {
-        printf("Error creating the cap_queue_Real_Current or cap_queue or cap_queue_Throttle or cap_queue_Current or cap_queue_Real_Temperature or cap_queue_DutyCycle or cap_queue_Real_BattVolts");
+        printf("Error creating the cap_queue_Real_BattPorcentage or cap_queue_Real_Current or cap_queue or cap_queue_Throttle or cap_queue_Current or cap_queue_Real_Temperature or cap_queue_DutyCycle or cap_queue_Real_BattVolts");
     }
 
     printf("Init Nextion...\n");
@@ -836,7 +866,7 @@ void app_main(void)
     xTaskCreate(disp_captured_signal, "mcpwm_config", 4096, NULL, 0, NULL); //comment if you don't want to use capture module
     xTaskCreate(setup_print_ADC, "setup_print_ADC", 4096, NULL, 1, NULL);   //comment if you don't want to use capture module
     // @TODO fix with que
-    xTaskCreate(mcpwm_example_bldc_control, "mcpwm_example_a", 16000, NULL, configMAX_PRIORITIES - 1, NULL);
+    xTaskCreate(mcpwm_example_bldc_control, "mcpwm_example_a", 4096, NULL, configMAX_PRIORITIES - 1, NULL);
     xTaskCreate(rx_task, "uart_rx_task", 1024 * 2, NULL, configMAX_PRIORITIES - 2, NULL);
     xTaskCreate(tx_task, "uart_tx_task", 1024 * 2, NULL, configMAX_PRIORITIES - 3, NULL);
 }

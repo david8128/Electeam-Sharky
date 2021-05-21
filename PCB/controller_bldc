@@ -1,0 +1,58 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KiCad BOM Example 5</title>
+    </head>
+    <body>
+    <h1>C:\Users\david\espProjects\Electeam-Sharky-ESP32\PCB\controller_bldc.sch</h1>
+    <p>14/05/2021 09:50:20 a. m.</p>
+    <p>Eeschema (5.1.9)-1</p>
+    <p><b>Component Count:</b>72</p>
+    <table>
+    <tr><th style='width:640px'>Ref</th><th>Qnty</th><th>Value</th><th>Part</th><th>Footprint</th><th>Description</th><th>Vendor</th></tr>
+    <tr><td>C1</td><td>1</td><td>1uF</td><td>Device:C_Small</td><td>Capacitor_THT:C_Disc_D7.5mm_W5.0mm_P10.00mm</td><td>Unpolarized capacitor, small symbol</td><td></td></tr>
+    <tr><td>C2, C3, C4</td><td>3</td><td>2.2uF</td><td>Device:CP</td><td>Capacitor_THT:CP_Radial_D6.3mm_P2.50mm</td><td>Polarized capacitor</td><td></td></tr>
+    <tr><td>C5</td><td>1</td><td>0.47uF</td><td>Device:C_Small</td><td>Capacitor_THT:C_Disc_D7.5mm_W5.0mm_P10.00mm</td><td>Unpolarized capacitor, small symbol</td><td></td></tr>
+    <tr><td>C6</td><td>1</td><td>47uF</td><td>Device:CP</td><td>Capacitor_THT:CP_Radial_D8.0mm_P3.80mm</td><td>Polarized capacitor</td><td></td></tr>
+    <tr><td>C7, C8, C9</td><td>3</td><td>0.1uF</td><td>Device:C</td><td>Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm</td><td>Unpolarized capacitor</td><td></td></tr>
+    <tr><td>C10, C11, C12</td><td>3</td><td>220uF</td><td>Device:CP</td><td>Capacitor_SMD:CP_Elec_10x14.3</td><td>Polarized capacitor</td><td></td></tr>
+    <tr><td>C13</td><td>1</td><td>0.1uF</td><td>Device:C_Small</td><td>Capacitor_THT:C_Disc_D7.5mm_W5.0mm_P10.00mm</td><td>Unpolarized capacitor, small symbol</td><td></td></tr>
+    <tr><td>D1, D2, D3, D9</td><td>4</td><td>1N4004</td><td>pspice:DIODE</td><td>Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal</td><td>Diode symbol for simulation only. Pin order incompatible with official kicad footprints</td><td></td></tr>
+    <tr><td>D4, D5</td><td>2</td><td>1N4728A</td><td>Diode:1N47xxA</td><td>Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal</td><td>1300mW Silicon planar power Zener diodes, DO-41</td><td></td></tr>
+    <tr><td>D6, D7, D8</td><td>3</td><td>1N4148</td><td>Diode:1N4148</td><td>Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal</td><td>100V 0.15A standard switching diode, DO-35</td><td></td></tr>
+    <tr><td>F1</td><td>1</td><td>Fuse</td><td>Device:Fuse</td><td>Package_TO_SOT_THT_Electeam:Portafusible</td><td>Fuse</td><td></td></tr>
+    <tr><td>J1</td><td>1</td><td>Battery Supply</td><td>Connector:Conn_01x02_Male</td><td>Connector_Phoenix_GMSTB:PhoenixContact_GMSTBA_2,5_2-G_1x02_P7.50mm_Horizontal</td><td>Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</td><td></td></tr>
+    <tr><td>J2</td><td>1</td><td>Conn_01x11_Male</td><td>Connector:Conn_01x11_Male</td><td>Connector_Molex:Molex_KK-254_AE-6410-11A_1x11_P2.54mm_Vertical</td><td>Generic connector, single row, 01x11, script generated (kicad-library-utils/schlib/autogen/connector/)</td><td></td></tr>
+    <tr><td>J6</td><td>1</td><td>LM35</td><td>Connector:Conn_01x03_Male</td><td>Connector_Molex:Molex_KK-254_AE-6410-03A_1x03_P2.54mm_Vertical</td><td>Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)</td><td></td></tr>
+    <tr><td>J7</td><td>1</td><td>Hall Sensors</td><td>Connector:Conn_01x05_Male</td><td>Connector_Molex:Molex_KK-254_AE-6410-05A_1x05_P2.54mm_Vertical</td><td>Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)</td><td></td></tr>
+    <tr><td>J9</td><td>1</td><td>BLDC Motor</td><td>Connector:Conn_01x03_Male</td><td>Connector_Phoenix_GMSTB:PhoenixContact_GMSTBA_2,5_3-G-7,62_1x03_P7.62mm_Horizontal</td><td>Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)</td><td></td></tr>
+    <tr><td>K1</td><td>1</td><td>RAYEX-L90B</td><td>Relay:RAYEX-L90B</td><td>Relay_THT:Relay_SPST_RAYEX-L90B</td><td>Power relay, NC, SPST, 30A</td><td></td></tr>
+    <tr><td>Q1, Q3, Q5</td><td>3</td><td>IRF1010N</td><td>Device:Q_PMOS_GDS</td><td>Package_TO_SOT_THT_Electeam:TO-220-3_Horizontal_TabDown</td><td>P-MOSFET transistor, gate/drain/source</td><td></td></tr>
+    <tr><td>Q2, Q4, Q6</td><td>3</td><td>IRF1010N</td><td>Device:Q_PMOS_GDS</td><td>Package_TO_SOT_THT_Electeam:TO-220-3_Horizontal_TabUp</td><td>P-MOSFET transistor, gate/drain/source</td><td></td></tr>
+    <tr><td>Q7</td><td>1</td><td>PN2222A</td><td>Transistor_BJT:PN2222A</td><td>Package_TO_SOT_THT:TO-92_Inline</td><td>1A Ic, 40V Vce, NPN Transistor, General Purpose Transistor, TO-92</td><td></td></tr>
+    <tr><td>R1</td><td>1</td><td>12k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R2, R3</td><td>2</td><td>1k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R4, R16</td><td>2</td><td>10k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R5, R6, R7, R8, R9, R10</td><td>6</td><td>100</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R11</td><td>1</td><td>0.1</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R12, R13, R14, R15</td><td>4</td><td>1.5k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R17</td><td>1</td><td>5.2k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R18, R28</td><td>2</td><td>220</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R19</td><td>1</td><td>4.7k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R20, R21, R22</td><td>3</td><td>15k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R23</td><td>1</td><td>150k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R24</td><td>1</td><td>75k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R25</td><td>1</td><td>2k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R26, R27, R29</td><td>3</td><td>2.5k</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>U1</td><td>1</td><td>ESP32-DEVKITC-32D</td><td>controller_bldc-rescue:ESP32-DEVKITC-32D-ESP32-DEVKITC-32D</td><td>ESP32-DEVKITC-32D_Electeam:MODULE_ESP32-DEVKITC-32D</td><td></td><td></td></tr>
+    <tr><td>U2</td><td>1</td><td>Opamp_Dual_Generic</td><td>Device:Opamp_Dual_Generic</td><td>Package_DIP:DIP-8_W7.62mm_LongPads</td><td>Dual operational amplifier</td><td></td></tr>
+    <tr><td>U3</td><td>1</td><td>LM2596SOURCE_Pin2</td><td>Converter_DCDC_Electeam:LM2596SOURCE_Pin2</td><td>Package_TO_SOT_THT_Electeam:LM2596DCSourcePin2_Electeam</td><td></td><td></td></tr>
+    <tr><td>U4, U8, U9</td><td>3</td><td>IR2103</td><td>Driver_FET:IR2103</td><td>Package_SO:SO-8_3.9x4.9mm_P1.27mm</td><td>Half-Bridge Driver, 600V, 210/360mA, PDIP-8/SOIC-8</td><td></td></tr>
+    <tr><td>U5</td><td>1</td><td>LM2596SOURCE</td><td>Converter_DCDC_Electeam:LM2596SOURCE</td><td>Package_TO_SOT_THT_Electeam:LM2596DCSource_Electeam</td><td></td><td></td></tr><!--TABLEROW-->
+    </table>
+    </body>
+</html>
+    

@@ -30,7 +30,8 @@
 			"uart_caps.h": "c",
 			"cstring": "c",
 			"complex": "c",
-			"sstream": "c"
+			"sstream": "c",
+			"cmath": "c"
 		},
 		"terminal.integrated.defaultProfile.windows": "PowerShell",
 		"terminal.integrated.fontFamily": "Consolas",
