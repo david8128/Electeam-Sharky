@@ -1,4 +1,0 @@
-Note the reference of nextion in README, 70mA
-Note the current and voltage in Current Sensor
-Fix AMp op negative voltage
-Update schematic in README
