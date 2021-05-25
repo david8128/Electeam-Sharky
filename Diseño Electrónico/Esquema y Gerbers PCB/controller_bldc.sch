@@ -691,8 +691,6 @@ Wire Wire Line
 Wire Wire Line
 	8550 8150 9100 8150
 Wire Wire Line
-	8950 7800 9150 7800
-Wire Wire Line
 	9150 7900 8900 7900
 Wire Wire Line
 	8950 7300 9150 7300
@@ -2234,4 +2232,16 @@ Connection ~ 10000 2250
 Connection ~ 9850 2250
 Wire Wire Line
 	9850 2250 9850 2300
+Text GLabel 8950 7600 0    50   Input ~ 0
+HC-Control
+Wire Wire Line
+	8950 7600 9150 7600
+NoConn ~ 9150 7700
+NoConn ~ 9150 7800
+NoConn ~ 9150 6800
+NoConn ~ 9150 6700
+NoConn ~ 9150 6600
+NoConn ~ 10700 6600
+NoConn ~ 10700 6700
+NoConn ~ 10700 7000
 $EndSCHEMATC

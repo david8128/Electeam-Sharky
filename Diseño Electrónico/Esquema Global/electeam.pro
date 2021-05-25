@@ -1,4 +1,4 @@
-update=21/05/2021 09:51:02 a. m.
+update=25/05/2021 11:20:50 a. m.
 version=1
 last_client=kicad
 [general]
@@ -33,8 +33,8 @@ LibDir=
 [eeschema/libraries]
 [schematic_editor]
 version=1
-PageLayoutDescrFile=C:/Users/david/espProjects/Electeam-Sharky-ESP32/PCB/libraries/page_layout.kicad_wks
-PlotDirectoryName=
+PageLayoutDescrFile=Layout/sinmarco.kicad_wks
+PlotDirectoryName=./
 SubpartIdSeparator=0
 SubpartFirstId=65
 NetFmtName=Pcbnew
