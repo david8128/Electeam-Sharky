@@ -47,6 +47,7 @@
 #include "driver/uart.h"
 #include "soc/uart_struct.h"
 
+
 // ~|* Define Section *|~
 
 // Define for ADC

@@ -1,0 +1,22 @@
+Warning: 17:58:36: [3D File Resolver] No such path; ensure the environment var is defined
+Warning: 
+Warning: 17:58:36: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'Q2'
+Warning: 17:58:36: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'U4'
+Warning: 17:58:36: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'U8'
+Warning: 17:58:36: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'U9'
+Warning: 17:58:36: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'Q1'
+Warning: 17:58:36: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'Q3'
+Warning: 17:58:36: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'Q4'
+Warning: 17:58:36: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'Q5'
+Warning: 17:58:36: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'Q6'
+Warning: 17:58:37: C:/Jenkins/workspace/windows-kicad-msys2-stable/src/kicad/utils/kicad2step/pcb/oce_utils.cpp: AddComponent: 588
+Warning:   * no model defined for component 'K1'
