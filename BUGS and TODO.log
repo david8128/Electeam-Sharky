@@ -1,4 +1,6 @@
 [General Tasks]:
+    TODO Documentar temperatura mínima y máxima para que el BMS deconecte la batería
+    TODO Añadir datasheet transistores IGBT
     TODO Read the rules for the local marathon
     ISSUE [In progress] Do the schematic for the control > README.md #23
     ISSUE [In progress] Determine the modes according to the rules of the Shell Echo Marathon Competition #20

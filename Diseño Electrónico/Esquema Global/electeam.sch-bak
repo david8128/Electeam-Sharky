@@ -1166,7 +1166,7 @@ F 3 "~" H 11700 4300 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Text GLabel 11400 3950 2    50   Input ~ 0
-D-IRF1010N
+S-IRF1010N
 $Comp
 L Device:R R11
 U 1 1 607F2CED
@@ -2129,7 +2129,7 @@ Wire Wire Line
 Wire Wire Line
 	12150 8550 12150 8800
 Text GLabel 12150 8800 2    50   Input ~ 0
-D-IRF1010N
+S-IRF1010N
 Wire Wire Line
 	12150 8150 12150 8050
 $Comp
@@ -2604,7 +2604,7 @@ Wire Notes Line
 Text Notes 300  3400 0    98   ~ 0
 Pack B+PCB\n
 Text Notes 14750 10200 0    50   ~ 0
-Ventilador\nFrenos\nVatímetro\n\n
+Ventilador\nFrenos\nVatímetro\n\nSwitch ON/OFF
 Text Notes 14700 10800 0    50   ~ 0
 Fix:\nMedir resistencia motor\nMedir inductancia motor\nVerificar si se añade símbolo motor DC\n\n
 Wire Wire Line
