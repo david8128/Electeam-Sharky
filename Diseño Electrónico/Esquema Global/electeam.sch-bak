@@ -2605,8 +2605,8 @@ Text Notes 300  3400 0    98   ~ 0
 Pack B+PCB\n
 Text Notes 14750 10200 0    50   ~ 0
 Ventilador\nFrenos\nVatímetro\n\n
-Text Notes 14750 10600 0    50   ~ 0
-Fix:\nMedir resistencia motor\nMedir inductancia motor\n
+Text Notes 14700 10800 0    50   ~ 0
+Fix:\nMedir resistencia motor\nMedir inductancia motor\nVerificar si se añade símbolo motor DC\n\n
 Wire Wire Line
 	500  9900 500  9800
 Wire Wire Line
@@ -2732,4 +2732,6 @@ Wire Notes Line
 	300  8700 300  10700
 Text Notes 550  8950 0    118  ~ 0
 Alimentación - High Current 
+Text Notes 14700 10950 0    50   ~ 0
+Add:\nHierarchy
 $EndSCHEMATC
