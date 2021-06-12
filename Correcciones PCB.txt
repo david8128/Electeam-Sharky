@@ -1,0 +1,16 @@
+Equipo Sharky:
+    Equipo Electeam:
+    
+    Correcciones Sch PCB
+    [ ] Añadir ventilador
+    [ ] Corregir conexiones del ESP32
+    [ ] Añadir resistencias de protección de los IR2103
+    [x] Corregir esquemático OPC
+    [x] Corregir switch de encendido
+    
+    Correciones Gerber PCBX
+    [ ] Corregir transistores IGBT
+    [ ] Aumentar la distancia de clearance a 0.7 mm
+    [ ] Cambiar ubicación del switch de encendido
+    [ ] Disminuir distancia entre pines del c13, debe quedar de 5mm
+    [ ] Verificar todas las tierras en ambos planos

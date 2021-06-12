@@ -1,7 +1,9 @@
 # Electeam-Sharky-ESP32
 
-
-This is the firmware for the ESP32-WROOM-32 microcontroller where throttle, break, LCD screen, motor and more systems are integrated.
+## OrderMe:
+1N4728A: caída de voltaje de 3 a 3.5V - CONFIRMAR
+## ORDERED:
+This is the firmware for the ESP32-DEVKITV1 microcontroller where throttle, break, LCD screen, motor and more systems are integrated.
 
 ![Schematic](https://drive.google.com/uc?export=view&id=1QOUmJN16q0gCpN-vlL1p3sVyBkoYProb) 
 <!-- TODO Update schematic here -->
